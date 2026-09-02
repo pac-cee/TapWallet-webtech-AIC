@@ -56,6 +56,14 @@ nothing to install or configure.
 - Salted password hashing, parameterized HQL, and server-side-authoritative
   validation.
 
+## Phase-1 documentation
+
+The Assignment-3 Phase-1 document (abstract, problem statement, scope,
+AS-IS/TO-BE models, business requirements, software qualities, and the
+full-domain class diagram) is at `docs/phase1/tapwallet-dossier.html` —
+open it in a browser, or view it live at:
+https://claude.ai/code/artifact/d0320ea9-7dd3-4b5c-b8e3-41bcfdf0e459
+
 ## What's documented but not implemented
 
 The rest of the TapWallet domain (NFC cards, merchants, transactions,

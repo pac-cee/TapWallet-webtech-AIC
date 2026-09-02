@@ -1,0 +1,450 @@
+<title>TapWallet Dossier</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,500&family=IBM+Plex+Mono:wght@400;500;600&display=swap" />
+<style>
+  :root{
+    --paper:#f3f2ec;
+    --surface:#ffffff;
+    --surface-2:#ece9df;
+    --ink:#1b2320;
+    --ink-soft:#454f49;
+    --muted:#6b756d;
+    --line:#d8d4c4;
+    --accent:#0d6e5c;
+    --accent-ink:#083f34;
+    --accent-soft:#e2efe9;
+    --warm:#b6501f;
+    --warm-soft:#f6e6db;
+    --good:#0d6e5c;
+    --good-soft:#e2efe9;
+    --shadow: 0 1px 2px rgba(27,35,32,.06), 0 8px 24px -12px rgba(27,35,32,.18);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#10151a;
+      --surface:#171d22;
+      --surface-2:#1d242a;
+      --ink:#eef1ee;
+      --ink-soft:#c3ccc6;
+      --muted:#93a39a;
+      --line:#29323a;
+      --accent:#35c9a4;
+      --accent-ink:#bdf2e2;
+      --accent-soft:#12332c;
+      --warm:#e08a52;
+      --warm-soft:#3a2418;
+      --good:#35c9a4;
+      --good-soft:#12332c;
+      --shadow: 0 1px 2px rgba(0,0,0,.4), 0 12px 32px -14px rgba(0,0,0,.6);
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#10151a;
+    --surface:#171d22;
+    --surface-2:#1d242a;
+    --ink:#eef1ee;
+    --ink-soft:#c3ccc6;
+    --muted:#93a39a;
+    --line:#29323a;
+    --accent:#35c9a4;
+    --accent-ink:#bdf2e2;
+    --accent-soft:#12332c;
+    --warm:#e08a52;
+    --warm-soft:#3a2418;
+    --good:#35c9a4;
+    --good-soft:#12332c;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 12px 32px -14px rgba(0,0,0,.6);
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:"Source Serif 4", Georgia, "Times New Roman", serif;
+    font-size:17px;
+    line-height:1.65;
+  }
+  h1,h2,h3,.eyebrow,.label,nav,.stat-num,button{
+    font-family:"Archivo", "Helvetica Neue", Arial, sans-serif;
+  }
+  code, .mono, .fig, .idx-num, .pill, table{
+    font-family:"IBM Plex Mono", ui-monospace, Menlo, monospace;
+  }
+  h1,h2,h3{ text-wrap:balance; color:var(--ink); }
+  p{ max-width:66ch; color:var(--ink-soft); }
+  a{ color:var(--accent); }
+
+  .shell{
+    max-width:1180px;
+    margin:0 auto;
+    padding:40px 24px 120px;
+    display:grid;
+    grid-template-columns:220px minmax(0,760px);
+    gap:56px;
+    justify-content:center;
+  }
+  @media (max-width:900px){
+    .shell{ grid-template-columns:1fr; padding:24px 18px 80px; }
+  }
+
+  /* ---- Left index rail ---- */
+  .rail{ position:sticky; top:28px; align-self:start; display:flex; flex-direction:column; gap:2px; }
+  @media (max-width:900px){
+    .rail{
+      position:static; flex-direction:row; overflow-x:auto; gap:4px;
+      padding-bottom:10px; border-bottom:1px solid var(--line); margin-bottom:8px;
+    }
+  }
+  .rail a{
+    display:flex; align-items:baseline; gap:8px;
+    padding:7px 8px; border-radius:4px;
+    color:var(--muted); text-decoration:none; font-size:13px; font-weight:600;
+    white-space:nowrap;
+  }
+  .rail a:hover{ background:var(--surface-2); color:var(--ink); }
+  .rail .idx-num{ color:var(--accent); font-size:12px; }
+  .rail-title{
+    font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--muted); margin:0 0 6px 8px; font-weight:700;
+  }
+
+  /* ---- Cover block ---- */
+  .cover{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:10px;
+    box-shadow:var(--shadow);
+    padding:36px 36px 28px;
+    margin-bottom:48px;
+  }
+  .eyebrow{
+    font-size:12px; font-weight:700; letter-spacing:.12em; text-transform:uppercase;
+    color:var(--accent); margin:0 0 14px;
+  }
+  .cover h1{
+    font-size:clamp(32px,4.4vw,44px); line-height:1.05; margin:0 0 10px; letter-spacing:-.01em;
+  }
+  .cover .tagline{
+    font-family:"Source Serif 4", serif; font-style:italic; font-size:19px;
+    color:var(--ink-soft); margin:0 0 24px; max-width:56ch;
+  }
+  .cover-meta{
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+    gap:16px 24px; border-top:1px solid var(--line); padding-top:20px;
+  }
+  .cover-meta dt{
+    font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); font-weight:700;
+  }
+  .cover-meta dd{ margin:4px 0 0; font-size:15px; color:var(--ink); }
+  .cover-meta dd.mono{ font-size:14px; }
+
+  /* ---- Sections ---- */
+  section{ margin:0 0 56px; scroll-margin-top:24px; }
+  .sec-head{ display:flex; align-items:baseline; gap:12px; margin-bottom:6px; }
+  .sec-head .idx-num{ color:var(--accent); font-size:15px; font-weight:600; }
+  .sec-head h2{ font-size:24px; margin:0; letter-spacing:-.01em; }
+  .sec-rule{ height:1px; background:var(--line); margin:14px 0 22px; }
+
+  .status-row{ display:flex; flex-wrap:wrap; gap:8px; margin:14px 0 6px; }
+  .pill{
+    font-size:11.5px; font-weight:600; padding:4px 10px; border-radius:999px;
+    display:inline-flex; align-items:center; gap:6px; letter-spacing:.02em;
+  }
+  .pill.good{ background:var(--good-soft); color:var(--good); }
+  .pill.warm{ background:var(--warm-soft); color:var(--warm); }
+  .pill::before{ content:""; width:6px; height:6px; border-radius:50%; background:currentColor; }
+
+  .callout{
+    border:1px dashed var(--warm);
+    background:var(--warm-soft);
+    border-radius:8px;
+    padding:16px 18px;
+    margin:18px 0;
+    display:flex; gap:12px; align-items:flex-start;
+  }
+  .callout .tag{
+    font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--warm); flex:none; padding-top:2px;
+  }
+  .callout p{ margin:0; color:var(--ink); max-width:none; font-family:"IBM Plex Mono",monospace; font-size:13.5px; }
+
+  .card{
+    background:var(--surface); border:1px solid var(--line); border-radius:8px;
+    padding:20px 22px; box-shadow:var(--shadow);
+  }
+  .grid-2{ display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+  @media (max-width:640px){ .grid-2{ grid-template-columns:1fr; } }
+  .card h3{ font-size:14px; margin:0 0 10px; letter-spacing:.02em; }
+  .card h3 .idx-num{ color:var(--accent); margin-right:6px; }
+  .card ol, .card ul{ margin:0; padding-left:20px; color:var(--ink-soft); font-size:15px; }
+  .card li{ margin-bottom:8px; }
+  .card li:last-child{ margin-bottom:0; }
+  .card .flow-note{ margin-top:12px; padding-top:12px; border-top:1px dashed var(--line); font-size:13.5px; color:var(--muted); }
+
+  table{ width:100%; border-collapse:collapse; font-size:13.5px; }
+  .table-wrap{ overflow-x:auto; border:1px solid var(--line); border-radius:8px; }
+  th,td{ text-align:left; padding:9px 14px; border-bottom:1px solid var(--line); vertical-align:top; }
+  thead th{ background:var(--surface-2); font-family:"Archivo",sans-serif; font-weight:700; font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); }
+  tbody tr:last-child td{ border-bottom:none; }
+  tbody tr:hover{ background:var(--surface-2); }
+  td.num{ font-variant-numeric:tabular-nums; color:var(--accent); font-weight:600; }
+
+  .qualities{ display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; }
+  .quality h3{ display:flex; align-items:center; gap:8px; font-size:14.5px; margin:0 0 6px; }
+  .quality .swatch{ width:9px; height:9px; border-radius:50%; background:var(--accent); flex:none; }
+  .quality p{ font-size:14px; margin:0; max-width:none; }
+
+  .diagram-card{ background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:8px; box-shadow:var(--shadow); overflow-x:auto; }
+  .diagram-legend{ display:flex; gap:18px; flex-wrap:wrap; margin-top:14px; font-size:12.5px; color:var(--muted); }
+  .diagram-legend span{ display:inline-flex; align-items:center; gap:6px; }
+  .diagram-legend i{ width:10px; height:10px; border-radius:2px; display:inline-block; }
+
+  footer{
+    max-width:760px; margin:0 auto; padding:0 24px 60px; grid-column:1/-1;
+  }
+  .footer-box{
+    border-top:1px solid var(--line); padding-top:22px; margin-top:8px;
+    font-size:13px; color:var(--muted); display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap;
+  }
+  .footer-box .mono{ font-size:12.5px; }
+</style>
+
+<div class="shell">
+  <nav class="rail" aria-label="Section index">
+    <p class="rail-title">Contents</p>
+    <a href="#abstract"><span class="idx-num">01</span>Abstract</a>
+    <a href="#problem"><span class="idx-num">02</span>Problem Statement</a>
+    <a href="#scope"><span class="idx-num">03</span>Scope</a>
+    <a href="#as-is"><span class="idx-num">04</span>AS-IS Model</a>
+    <a href="#to-be"><span class="idx-num">05</span>TO-BE Model</a>
+    <a href="#requirements"><span class="idx-num">06</span>Business Requirements</a>
+    <a href="#qualities"><span class="idx-num">07</span>Software Qualities</a>
+    <a href="#class-diagram"><span class="idx-num">08</span>Class Diagram</a>
+    <a href="#links"><span class="idx-num">09</span>Repo &amp; Video</a>
+  </nav>
+
+  <main>
+    <div class="cover">
+      <p class="eyebrow">Web Technology &middot; Assignment 3 &middot; Project Proposal</p>
+      <h1>TapWallet</h1>
+      <p class="tagline">A web-based digital wallet and NFC payment platform &mdash; wallet management, contactless merchant payments, and transaction tracking, built on JSF and Hibernate.</p>
+      <dl class="cover-meta">
+        <div><dt>Author</dt><dd>Pacifique Bakundukize</dd></div>
+        <div><dt>Student ID</dt><dd class="mono">26798</dd></div>
+        <div><dt>Course</dt><dd>Web Technology</dd></div>
+        <div><dt>Submission</dt><dd class="mono">26798_Pacifique_Bakundukize_assignment_3.zip</dd></div>
+      </dl>
+    </div>
+
+    <section id="abstract">
+      <div class="sec-head"><span class="idx-num mono">01</span><h2>Abstract</h2></div>
+      <div class="sec-rule"></div>
+      <p>TapWallet is a web-based digital wallet and contactless payment platform that lets a customer hold a balance, top up or withdraw funds, and pay a registered merchant by tapping an NFC-linked card or device. A merchant registers a business profile, accepts payments, and reviews revenue through a dashboard; an administrator oversees accounts and audits activity across the platform. The system does not reinvent Rwanda's payment rails &mdash; it demonstrates, in a contained web application, the pattern behind them: a wallet ledger, a tokenised card identifier standing in for an account rather than carrying a balance itself, and a validated, auditable transaction flow between two parties. This document proposes that full system and its data model, then implements a working CRUD slice of it &mdash; the <strong>User</strong> and <strong>Wallet</strong> entities &mdash; using JSF 2.3, Hibernate 5, and an in-memory H2 database, with three layers of input validation and CSS applied in all three inclusion styles the assignment requires.</p>
+    </section>
+
+    <section id="problem">
+      <div class="sec-head"><span class="idx-num mono">02</span><h2>Problem Statement</h2></div>
+      <div class="sec-rule"></div>
+      <p>Small merchants in Rwanda largely rely on cash or USSD-based mobile money for in-person payments. Both carry friction that a wallet-and-tap model is designed to remove: cash requires change and manual counting; USSD payment requires the customer to dial a code, key in a PIN, and wait for an SMS the merchant must read off their own phone to confirm the sale. Neither produces a machine-readable ledger the merchant can query later &mdash; reconciliation happens by re-reading SMS threads at the end of the day, and a disputed transaction has no single record both parties can point to. The underlying gap is not payment capability &mdash; MoMo and Airtel Money already move money &mdash; it is the absence, at the point of sale, of a shared, instantly-updated ledger that both the payer and the payee can see the moment a tap happens.</p>
+    </section>
+
+    <section id="scope">
+      <div class="sec-head"><span class="idx-num mono">03</span><h2>Scope</h2></div>
+      <div class="sec-rule"></div>
+      <p>The proposal below describes the full intended system. The status row on each entity in the class diagram (Section 08) marks what this submission actually builds versus what it documents for a future phase.</p>
+      <div class="grid-2">
+        <div class="card">
+          <h3><span class="idx-num">In</span>In scope &mdash; system design</h3>
+          <ul>
+            <li>Customer registration, wallet balance, top-up and withdrawal</li>
+            <li>NFC card token linked to a wallet, used at a merchant terminal</li>
+            <li>Merchant registration, payment receipt, revenue dashboard</li>
+            <li>Transaction ledger with sender, receiver, amount, status</li>
+            <li>Admin account and wallet oversight, freeze/unfreeze, audit log</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3><span class="idx-num">Out</span>Out of scope</h3>
+          <ul>
+            <li>Integration with a licensed payment gateway or real MoMo/Airtel rails</li>
+            <li>Physical NFC hardware reading (simulated as a stored card token)</li>
+            <li>Production authentication/session management, rate limiting</li>
+            <li>Regulatory compliance (KYC/AML) beyond basic input validation</li>
+          </ul>
+        </div>
+      </div>
+      <div class="status-row">
+        <span class="pill good">Implemented in code: User, Wallet (full CRUD)</span>
+        <span class="pill warm">Documented only: NfcCard, Merchant, Transaction, TopUp, Withdrawal</span>
+      </div>
+    </section>
+
+    <section id="as-is">
+      <div class="sec-head"><span class="idx-num mono">04</span><h2>AS-IS Model</h2></div>
+      <div class="sec-rule"></div>
+      <p>Today's point-of-sale flow for a small merchant, using cash or USSD mobile money:</p>
+      <div class="card">
+        <ol>
+          <li>Customer and merchant agree a price at the counter.</li>
+          <li>Customer either hands over cash, or dials the mobile money USSD code, selects &ldquo;pay merchant&rdquo;, enters the merchant's number and amount, and confirms with a PIN.</li>
+          <li>Customer waits for a confirmation SMS from the mobile money provider.</li>
+          <li>Customer shows the SMS to the merchant, or the merchant separately checks their own phone for an incoming-payment SMS.</li>
+          <li>Merchant manually notes the sale (paper book, or nothing at all) &mdash; there is no shared, structured record either party can query later.</li>
+          <li>At day's end, the merchant reconciles by scrolling back through SMS messages, one by one, against whatever cash or paper notes they kept.</li>
+        </ol>
+        <p class="flow-note">Friction points: multi-step USSD entry, a confirmation the merchant must find and trust on sight, and reconciliation that depends on a human re-reading a message log.</p>
+      </div>
+    </section>
+
+    <section id="to-be">
+      <div class="sec-head"><span class="idx-num mono">05</span><h2>TO-BE Model</h2></div>
+      <div class="sec-rule"></div>
+      <p>The proposed tap-to-pay flow, with a single ledger both parties read from immediately:</p>
+      <div class="card">
+        <ol>
+          <li>Customer taps their NFC card or device at the merchant's terminal.</li>
+          <li>The terminal reads the card's token and sends it, with the sale amount, to the Payment API.</li>
+          <li>The API resolves the token to a wallet, validates the customer and wallet are active, and checks the balance covers the amount.</li>
+          <li>In one transaction, the API debits the customer's wallet and credits the merchant's wallet, then writes a transaction record.</li>
+          <li>Both dashboards update immediately &mdash; the customer sees the debit, the merchant sees the credit &mdash; from the same record, with no SMS round-trip.</li>
+          <li>An administrator can trace any transaction back to both wallets and both parties from the audit log at any time.</li>
+        </ol>
+        <p class="flow-note">The NFC token identifies an account; it never carries a balance itself &mdash; the balance and the ledger live only on the backend, which is what makes the record trustworthy and disputable in the first place.</p>
+      </div>
+    </section>
+
+    <section id="requirements">
+      <div class="sec-head"><span class="idx-num mono">06</span><h2>Business Requirements</h2></div>
+      <div class="sec-rule"></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>ID</th><th>Requirement</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td class="num">BR-01</td><td>A customer can register an account and maintain a single wallet with a balance.</td><td><span class="pill good">Implemented</span></td></tr>
+            <tr><td class="num">BR-02</td><td>An administrator can create, view, edit, and remove any user or wallet record.</td><td><span class="pill good">Implemented</span></td></tr>
+            <tr><td class="num">BR-03</td><td>Every wallet must belong to exactly one existing user; balance can never go negative.</td><td><span class="pill good">Implemented</span></td></tr>
+            <tr><td class="num">BR-04</td><td>A customer can top up or withdraw funds against their wallet.</td><td><span class="pill warm">Documented</span></td></tr>
+            <tr><td class="num">BR-05</td><td>A wallet can be linked to an NFC card token for point-of-sale payment.</td><td><span class="pill warm">Documented</span></td></tr>
+            <tr><td class="num">BR-06</td><td>A merchant can register a business profile and receive tap payments.</td><td><span class="pill warm">Documented</span></td></tr>
+            <tr><td class="num">BR-07</td><td>Every payment produces a single transaction record both parties can view.</td><td><span class="pill warm">Documented</span></td></tr>
+            <tr><td class="num">BR-08</td><td>All user input is validated server-side before it reaches the database.</td><td><span class="pill good">Implemented</span></td></tr>
+            <tr><td class="num">BR-09</td><td>Passwords are never stored or displayed in plain text.</td><td><span class="pill good">Implemented</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="qualities">
+      <div class="sec-head"><span class="idx-num mono">07</span><h2>Software Qualities</h2></div>
+      <div class="sec-rule"></div>
+      <div class="qualities">
+        <div class="quality"><h3><span class="swatch"></span>Security</h3><p>Salted SHA-256 password hashing, HQL with bound parameters (no string-built queries), and server-side validation as the source of truth &mdash; the client can be bypassed, the database cannot.</p></div>
+        <div class="quality"><h3><span class="swatch"></span>Usability</h3><p>One reused form per entity for create and edit, inline field-level error messages, and plain navigation between the two record lists and the home page.</p></div>
+        <div class="quality"><h3><span class="swatch"></span>Maintainability</h3><p>A strict layering &mdash; entity, DAO, managed bean, view &mdash; with one class per responsibility, so a change to persistence never touches a view and vice versa.</p></div>
+        <div class="quality"><h3><span class="swatch"></span>Reliability</h3><p>Every write runs inside a Hibernate transaction (open &rarr; act &rarr; commit &rarr; close); the DAO, bean, and validation layers are covered by 34 automated JUnit tests.</p></div>
+        <div class="quality"><h3><span class="swatch"></span>Performance</h3><p>Primary-key lookups and an in-memory H2 database keep the demo instant; this is a teaching sandbox, not tuned for production load.</p></div>
+        <div class="quality"><h3><span class="swatch"></span>Scalability</h3><p>Swapping H2 for a networked RDBMS is a one-line change to <code>hibernate.cfg.xml</code>; new entities (Transaction, Merchant, NfcCard) slot into the same DAO/bean pattern without touching User or Wallet.</p></div>
+      </div>
+    </section>
+
+    <section id="class-diagram">
+      <div class="sec-head"><span class="idx-num mono">08</span><h2>Initial Class Diagram</h2></div>
+      <div class="sec-rule"></div>
+      <p>The full domain as designed. <strong>User</strong> and <strong>Wallet</strong> (solid) are implemented with complete CRUD in this submission; the remaining entities (dashed) are designed here and left for a later phase.</p>
+      <div class="diagram-card">
+<pre class="mermaid">
+classDiagram
+    class Audit {
+      <<MappedSuperclass>>
+      +LocalDateTime createdAt
+      +LocalDateTime updatedAt
+    }
+    class User {
+      +Long id
+      +String fullName
+      +String email
+      +String phone
+      +String passwordHash
+      +String role
+      +String status
+    }
+    class Wallet {
+      +Long id
+      +BigDecimal balance
+      +String currency
+      +String status
+    }
+    class NfcCard {
+      +Long id
+      +String token
+      +String status
+    }
+    class Merchant {
+      +Long id
+      +String businessName
+      +String merchantCode
+    }
+    class Transaction {
+      +Long id
+      +BigDecimal amount
+      +String type
+      +String status
+    }
+    class TopUp {
+      +Long id
+      +BigDecimal amount
+      +String method
+    }
+    class Withdrawal {
+      +Long id
+      +BigDecimal amount
+      +String method
+    }
+    class AuditLog {
+      +Long id
+      +String action
+      +String actor
+    }
+
+    Audit <|-- User
+    Audit <|-- Wallet
+    Audit <|-- Transaction
+    User "1" --> "1" Wallet : owns
+    Wallet "1" --> "0..1" NfcCard : linked to
+    User "1" --> "0..1" Merchant : operates
+    Wallet "1" --> "*" Transaction : sender in
+    Wallet "1" --> "*" Transaction : receiver in
+    Wallet "1" --> "*" TopUp : records
+    Wallet "1" --> "*" Withdrawal : records
+    Transaction "1" --> "0..1" AuditLog : traced by
+</pre>
+      </div>
+      <div class="diagram-legend">
+        <span><i style="background:var(--good)"></i>User, Wallet &mdash; implemented, full CRUD</span>
+        <span><i style="background:var(--warm)"></i>NfcCard, Merchant, Transaction, TopUp, Withdrawal, AuditLog &mdash; designed, not yet built</span>
+      </div>
+    </section>
+
+    <section id="links">
+      <div class="sec-head"><span class="idx-num mono">09</span><h2>Repository &amp; Video</h2></div>
+      <div class="sec-rule"></div>
+      <p>Both are required in the final submission and are left as placeholders here &mdash; fill them in before zipping.</p>
+      <div class="callout">
+        <span class="tag">Todo</span>
+        <p>GitHub repository (public): <em>&lt;paste the repo URL here after pushing&gt;</em></p>
+      </div>
+      <div class="callout">
+        <span class="tag">Todo</span>
+        <p>Video walkthrough (Google Vid, screen + camera, 5&ndash;10 min): <em>&lt;paste the share link here&gt;</em></p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-box">
+      <span>TapWallet &mdash; Web Technology, Assignment 3, Phase 1</span>
+      <span class="mono">26798_Pacifique_Bakundukize_assignment_3.zip</span>
+    </div>
+  </footer>
+</div>
