@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+<h:head>
+    <title>TapWallet - Wallets</title>
+    <h:outputStylesheet library="css" name="styles.css"/>
+    <style type="text/css">
+        .badge-active {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 10px;
+            background-color: #d4edda;
+            color: #155724;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .badge-frozen {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 10px;
+            background-color: #f8d7da;
+            color: #721c24;
+            font-size: 12px;
+            font-weight: bold;
+        }
+    </style>
+</h:head>
+<h:body>
+    <f:view>
+        <h1>Wallets</h1>
+        <div class="nav">
+            <h:link outcome="index" value="Home"/>
+            <h:link outcome="user-list" value="Manage Users"/>
+            <h:link outcome="wallet-form" value="Add New Wallet"/>
+        </div>
+        <div class="table-container">
+            <h:form>
+                <h:dataTable value="#{walletBean.allWallets}" var="w" border="1">
+                    <h:column>
+                        <f:facet name="header">Owner</f:facet>
+                        #{w.owner.fullName}
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Balance</f:facet>
+                        #{w.balance}
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Currency</f:facet>
+                        #{w.currency}
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Status</f:facet>
+                        <span class="#{w.status == 'ACTIVE' ? 'badge-active' : 'badge-frozen'}">#{w.status}</span>
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Actions</f:facet>
+                        <h:link outcome="wallet-form" value="Edit" styleClass="btn-link">
+                            <f:param name="id" value="#{w.id}"/>
+                        </h:link>
+                        &#160;|&#160;
+                        <h:commandLink value="Delete" action="#{walletBean.delete(w.id)}" styleClass="btn-danger"/>
+                    </h:column>
+                </h:dataTable>
+            </h:form>
+        </div>
+    </f:view>
+</h:body>
+</html>
