@@ -674,7 +674,8 @@ public class WalletDaoTest {
     private final WalletDao walletDao = new WalletDao();
 
     private User newOwner(String label) {
-        User owner = new User(label, label.toLowerCase() + "-" + System.nanoTime() + "@example.com",
+        String emailLocalPart = label.toLowerCase().replace(" ", "") + "-" + System.nanoTime();
+        User owner = new User(label, emailLocalPart + "@example.com",
                 "0788123456", "hash", "CUSTOMER", "ACTIVE");
         userDao.save(owner);
         return owner;
@@ -1284,7 +1285,8 @@ public class WalletBeanTest {
     private final WalletDao walletDao = new WalletDao();
 
     private User newOwner(String label) {
-        User owner = new User(label, label.toLowerCase() + "-" + System.nanoTime() + "@example.com",
+        String emailLocalPart = label.toLowerCase().replace(" ", "") + "-" + System.nanoTime();
+        User owner = new User(label, emailLocalPart + "@example.com",
                 "0788123456", "hash", "CUSTOMER", "ACTIVE");
         userDao.save(owner);
         return owner;

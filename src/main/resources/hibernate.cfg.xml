@@ -20,6 +20,7 @@
 
         <!--      Entity mapping-->
         <mapping class="rw.ac.auca.tapwallet.model.User"/>
+        <mapping class="rw.ac.auca.tapwallet.model.Wallet"/>
 
     </session-factory>
 
