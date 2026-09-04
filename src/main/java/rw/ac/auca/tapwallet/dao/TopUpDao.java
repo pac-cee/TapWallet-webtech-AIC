@@ -3,13 +3,14 @@ package rw.ac.auca.tapwallet.dao;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import rw.ac.auca.tapwallet.model.TopUp;
-import rw.ac.auca.tapwallet.model.Wallet;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 /**
  * The Class TopUpDao.
+ *
+ * <p>Pure persistence: CRUD plus finder queries. The credit/undo
+ * use-cases live in {@code rw.ac.auca.tapwallet.service.TopUpService}.</p>
  *
  * @author Pacifique Bakundukize
  * @version 1.0
@@ -18,26 +19,17 @@ public class TopUpDao {
 
     HibernateUtil hibernateUtil = new HibernateUtil();
 
-    // CREATE with ledger: credit wallet + persist row, atomically.
-    public TopUp credit(TopUp theTopUp){
+    // CREATE / UPDATE
+    public TopUp save(TopUp theTopUp){
+        // step 1: create session
         Session ss = hibernateUtil.getSessionFactory().openSession();
+        // step 2: create transaction
         Transaction tr = null;
         try {
             tr = ss.beginTransaction();
-            Wallet wallet = ss.get(Wallet.class, theTopUp.getWallet().getId());
-            if (wallet == null) {
-                throw new IllegalArgumentException("Wallet must exist.");
-            }
-            if (!"ACTIVE".equals(wallet.getStatus())) {
-                throw new IllegalStateException("Wallet must be ACTIVE to top up.");
-            }
-            if (theTopUp.getAmount() == null || theTopUp.getAmount().compareTo(new BigDecimal("0.01")) < 0) {
-                throw new IllegalArgumentException("Amount must be at least 0.01.");
-            }
-            wallet.setBalance(wallet.getBalance().add(theTopUp.getAmount()));
-            ss.update(wallet);
-            theTopUp.setWallet(wallet);
-            ss.save(theTopUp);
+            // step 3: perform action
+            ss.saveOrUpdate(theTopUp);
+            // step 4: commit transaction
             tr.commit();
         } catch (RuntimeException ex) {
             if (tr != null) {
@@ -45,11 +37,13 @@ public class TopUpDao {
             }
             throw ex;
         } finally {
+            // step 5: close session
             ss.close();
         }
         return theTopUp;
     }
 
+    // READ (all)
     public List<TopUp> findAll(){
         Session ss = hibernateUtil.getSessionFactory().openSession();
         try {
@@ -59,6 +53,7 @@ public class TopUpDao {
         }
     }
 
+    // READ (one)
     public TopUp findById(Long id){
         if (id == null) {
             return null;
@@ -71,6 +66,7 @@ public class TopUpDao {
         }
     }
 
+    // READ (for one wallet)
     public List<TopUp> findByWallet(Long walletId){
         Session ss = hibernateUtil.getSessionFactory().openSession();
         try {
@@ -82,8 +78,8 @@ public class TopUpDao {
         }
     }
 
-    // DELETE with reversal: debit wallet, then remove row.
-    public void deleteWithReversal(Long id){
+    // DELETE
+    public void delete(Long id){
         if (id == null) {
             return;
         }
@@ -92,13 +88,7 @@ public class TopUpDao {
         try {
             tr = ss.beginTransaction();
             TopUp topUp = ss.get(TopUp.class, id);
-            if (topUp != null) {
-                Wallet wallet = ss.get(Wallet.class, topUp.getWallet().getId());
-                if (wallet.getBalance().compareTo(topUp.getAmount()) < 0) {
-                    throw new IllegalStateException("Wallet balance too low to undo this top-up.");
-                }
-                wallet.setBalance(wallet.getBalance().subtract(topUp.getAmount()));
-                ss.update(wallet);
+            if (topUp != null){
                 ss.delete(topUp);
             }
             tr.commit();

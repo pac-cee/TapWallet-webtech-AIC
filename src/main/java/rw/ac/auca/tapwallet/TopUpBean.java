@@ -1,9 +1,9 @@
 package rw.ac.auca.tapwallet;
 
-import rw.ac.auca.tapwallet.dao.TopUpDao;
 import rw.ac.auca.tapwallet.dao.WalletDao;
 import rw.ac.auca.tapwallet.model.TopUp;
 import rw.ac.auca.tapwallet.model.Wallet;
+import rw.ac.auca.tapwallet.service.TopUpService;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
@@ -21,7 +21,7 @@ import java.util.List;
 @ManagedBean
 public class TopUpBean {
 
-    private TopUpDao topUpDao = new TopUpDao();
+    private TopUpService topUpService = new TopUpService();
     private WalletDao walletDao = new WalletDao();
 
     private Long walletId;
@@ -49,7 +49,7 @@ public class TopUpBean {
         topUp.setAmount(amount);
         topUp.setMethod(method);
         try {
-            topUpDao.credit(topUp);
+            topUpService.credit(topUp);
         } catch (IllegalStateException | IllegalArgumentException ex) {
             addError("Could not top up", ex.getMessage());
             return null;
@@ -62,7 +62,7 @@ public class TopUpBean {
 
     public String delete(Long topUpId) {
         try {
-            topUpDao.deleteWithReversal(topUpId);
+            topUpService.undo(topUpId);
         } catch (IllegalStateException ex) {
             addError("Could not undo top-up", ex.getMessage());
             return null;
@@ -74,7 +74,7 @@ public class TopUpBean {
     }
 
     public List<TopUp> getAllTopUps() {
-        return topUpDao.findAll();
+        return topUpService.findAll();
     }
 
     public List<Wallet> getAllWalletsForDropdown() {

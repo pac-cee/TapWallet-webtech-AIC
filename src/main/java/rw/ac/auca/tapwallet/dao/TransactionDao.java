@@ -2,17 +2,16 @@ package rw.ac.auca.tapwallet.dao;
 
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import rw.ac.auca.tapwallet.model.Wallet;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 /**
  * The Class TransactionDao.
  *
- * <p>Money movement is always applied atomically: debit sender, credit
- * receiver and persist the ledger row inside one Hibernate transaction,
- * so the two balances can never drift apart.</p>
+ * <p>Pure persistence: CRUD plus finder queries. The money-movement
+ * use-cases (transfer, reversal) live in
+ * {@code rw.ac.auca.tapwallet.service.PaymentService}, which owns the
+ * business rules and the transaction boundary around them.</p>
  *
  * @author Pacifique Bakundukize
  * @version 1.0
@@ -21,37 +20,17 @@ public class TransactionDao {
 
     HibernateUtil hibernateUtil = new HibernateUtil();
 
-    // CREATE with ledger: debit sender + credit receiver + persist row, atomically.
-    public rw.ac.auca.tapwallet.model.Transaction transfer(rw.ac.auca.tapwallet.model.Transaction theTx){
+    // CREATE / UPDATE
+    public rw.ac.auca.tapwallet.model.Transaction save(rw.ac.auca.tapwallet.model.Transaction theTx){
+        // step 1: create session
         Session ss = hibernateUtil.getSessionFactory().openSession();
+        // step 2: create transaction
         Transaction tr = null;
         try {
             tr = ss.beginTransaction();
-            Wallet sender = ss.get(Wallet.class, theTx.getSenderWallet().getId());
-            Wallet receiver = ss.get(Wallet.class, theTx.getReceiverWallet().getId());
-            if (sender == null || receiver == null) {
-                throw new IllegalArgumentException("Both wallets must exist.");
-            }
-            if (sender.getId().equals(receiver.getId())) {
-                throw new IllegalArgumentException("Sender and receiver must differ.");
-            }
-            BigDecimal amount = theTx.getAmount();
-            if (amount == null || amount.compareTo(new BigDecimal("0.01")) < 0) {
-                throw new IllegalArgumentException("Amount must be at least 0.01.");
-            }
-            if (!"ACTIVE".equals(sender.getStatus()) || !"ACTIVE".equals(receiver.getStatus())) {
-                throw new IllegalStateException("Both wallets must be ACTIVE.");
-            }
-            if (sender.getBalance().compareTo(amount) < 0) {
-                throw new IllegalStateException("Insufficient sender balance.");
-            }
-            sender.setBalance(sender.getBalance().subtract(amount));
-            receiver.setBalance(receiver.getBalance().add(amount));
-            ss.update(sender);
-            ss.update(receiver);
-            theTx.setSenderWallet(sender);
-            theTx.setReceiverWallet(receiver);
-            ss.save(theTx);
+            // step 3: perform action
+            ss.saveOrUpdate(theTx);
+            // step 4: commit transaction
             tr.commit();
         } catch (RuntimeException ex) {
             if (tr != null) {
@@ -59,6 +38,7 @@ public class TransactionDao {
             }
             throw ex;
         } finally {
+            // step 5: close session
             ss.close();
         }
         return theTx;
@@ -101,8 +81,8 @@ public class TransactionDao {
         }
     }
 
-    // DELETE with reversal: credit sender back + debit receiver, then remove row.
-    public void deleteWithReversal(Long id){
+    // DELETE
+    public void delete(Long id){
         if (id == null) {
             return;
         }
@@ -111,16 +91,7 @@ public class TransactionDao {
         try {
             tr = ss.beginTransaction();
             rw.ac.auca.tapwallet.model.Transaction tx = ss.get(rw.ac.auca.tapwallet.model.Transaction.class, id);
-            if (tx != null) {
-                Wallet sender = ss.get(Wallet.class, tx.getSenderWallet().getId());
-                Wallet receiver = ss.get(Wallet.class, tx.getReceiverWallet().getId());
-                if (receiver.getBalance().compareTo(tx.getAmount()) < 0) {
-                    throw new IllegalStateException("Receiver balance too low to reverse this payment.");
-                }
-                sender.setBalance(sender.getBalance().add(tx.getAmount()));
-                receiver.setBalance(receiver.getBalance().subtract(tx.getAmount()));
-                ss.update(sender);
-                ss.update(receiver);
+            if (tx != null){
                 ss.delete(tx);
             }
             tr.commit();

@@ -2,14 +2,15 @@ package rw.ac.auca.tapwallet.dao;
 
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import rw.ac.auca.tapwallet.model.Wallet;
 import rw.ac.auca.tapwallet.model.Withdrawal;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 /**
  * The Class WithdrawalDao.
+ *
+ * <p>Pure persistence: CRUD plus finder queries. The debit/undo
+ * use-cases live in {@code rw.ac.auca.tapwallet.service.WithdrawalService}.</p>
  *
  * @author Pacifique Bakundukize
  * @version 1.0
@@ -18,29 +19,17 @@ public class WithdrawalDao {
 
     HibernateUtil hibernateUtil = new HibernateUtil();
 
-    // CREATE with ledger: debit wallet + persist row, atomically.
-    public Withdrawal debit(Withdrawal theWithdrawal){
+    // CREATE / UPDATE
+    public Withdrawal save(Withdrawal theWithdrawal){
+        // step 1: create session
         Session ss = hibernateUtil.getSessionFactory().openSession();
+        // step 2: create transaction
         Transaction tr = null;
         try {
             tr = ss.beginTransaction();
-            Wallet wallet = ss.get(Wallet.class, theWithdrawal.getWallet().getId());
-            if (wallet == null) {
-                throw new IllegalArgumentException("Wallet must exist.");
-            }
-            if (!"ACTIVE".equals(wallet.getStatus())) {
-                throw new IllegalStateException("Wallet must be ACTIVE to withdraw.");
-            }
-            if (theWithdrawal.getAmount() == null || theWithdrawal.getAmount().compareTo(new BigDecimal("0.01")) < 0) {
-                throw new IllegalArgumentException("Amount must be at least 0.01.");
-            }
-            if (wallet.getBalance().compareTo(theWithdrawal.getAmount()) < 0) {
-                throw new IllegalStateException("Insufficient wallet balance.");
-            }
-            wallet.setBalance(wallet.getBalance().subtract(theWithdrawal.getAmount()));
-            ss.update(wallet);
-            theWithdrawal.setWallet(wallet);
-            ss.save(theWithdrawal);
+            // step 3: perform action
+            ss.saveOrUpdate(theWithdrawal);
+            // step 4: commit transaction
             tr.commit();
         } catch (RuntimeException ex) {
             if (tr != null) {
@@ -48,11 +37,13 @@ public class WithdrawalDao {
             }
             throw ex;
         } finally {
+            // step 5: close session
             ss.close();
         }
         return theWithdrawal;
     }
 
+    // READ (all)
     public List<Withdrawal> findAll(){
         Session ss = hibernateUtil.getSessionFactory().openSession();
         try {
@@ -62,6 +53,7 @@ public class WithdrawalDao {
         }
     }
 
+    // READ (one)
     public Withdrawal findById(Long id){
         if (id == null) {
             return null;
@@ -74,6 +66,7 @@ public class WithdrawalDao {
         }
     }
 
+    // READ (for one wallet)
     public List<Withdrawal> findByWallet(Long walletId){
         Session ss = hibernateUtil.getSessionFactory().openSession();
         try {
@@ -85,8 +78,8 @@ public class WithdrawalDao {
         }
     }
 
-    // DELETE with reversal: credit wallet back, then remove row.
-    public void deleteWithReversal(Long id){
+    // DELETE
+    public void delete(Long id){
         if (id == null) {
             return;
         }
@@ -95,10 +88,7 @@ public class WithdrawalDao {
         try {
             tr = ss.beginTransaction();
             Withdrawal withdrawal = ss.get(Withdrawal.class, id);
-            if (withdrawal != null) {
-                Wallet wallet = ss.get(Wallet.class, withdrawal.getWallet().getId());
-                wallet.setBalance(wallet.getBalance().add(withdrawal.getAmount()));
-                ss.update(wallet);
+            if (withdrawal != null){
                 ss.delete(withdrawal);
             }
             tr.commit();

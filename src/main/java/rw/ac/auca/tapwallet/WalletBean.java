@@ -1,11 +1,11 @@
 package rw.ac.auca.tapwallet;
 
 import rw.ac.auca.tapwallet.dao.NfcCardDao;
-import rw.ac.auca.tapwallet.dao.TopUpDao;
-import rw.ac.auca.tapwallet.dao.TransactionDao;
 import rw.ac.auca.tapwallet.dao.UserDao;
 import rw.ac.auca.tapwallet.dao.WalletDao;
-import rw.ac.auca.tapwallet.dao.WithdrawalDao;
+import rw.ac.auca.tapwallet.service.PaymentService;
+import rw.ac.auca.tapwallet.service.TopUpService;
+import rw.ac.auca.tapwallet.service.WithdrawalService;
 import rw.ac.auca.tapwallet.model.User;
 import rw.ac.auca.tapwallet.model.Wallet;
 
@@ -28,9 +28,9 @@ public class WalletBean {
     private WalletDao walletDao = new WalletDao();
     private UserDao userDao = new UserDao();
     private NfcCardDao cardDao = new NfcCardDao();
-    private TransactionDao transactionDao = new TransactionDao();
-    private TopUpDao topUpDao = new TopUpDao();
-    private WithdrawalDao withdrawalDao = new WithdrawalDao();
+    private PaymentService paymentService = new PaymentService();
+    private TopUpService topUpService = new TopUpService();
+    private WithdrawalService withdrawalService = new WithdrawalService();
 
     private Long id;
     private Long ownerId;
@@ -110,9 +110,9 @@ public class WalletBean {
                 addError("Could not delete wallet", "This wallet still has an NFC card. Delete the card first.");
                 return null;
             }
-            if (!transactionDao.findByWallet(walletId).isEmpty()
-                    || !topUpDao.findByWallet(walletId).isEmpty()
-                    || !withdrawalDao.findByWallet(walletId).isEmpty()) {
+            if (!paymentService.findByWallet(walletId).isEmpty()
+                    || !topUpService.findByWallet(walletId).isEmpty()
+                    || !withdrawalService.findByWallet(walletId).isEmpty()) {
                 addError("Could not delete wallet", "This wallet still has ledger entries. Reverse them first.");
                 return null;
             }

@@ -1,9 +1,9 @@
 package rw.ac.auca.tapwallet;
 
 import rw.ac.auca.tapwallet.dao.WalletDao;
-import rw.ac.auca.tapwallet.dao.WithdrawalDao;
 import rw.ac.auca.tapwallet.model.Wallet;
 import rw.ac.auca.tapwallet.model.Withdrawal;
+import rw.ac.auca.tapwallet.service.WithdrawalService;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
@@ -21,7 +21,7 @@ import java.util.List;
 @ManagedBean
 public class WithdrawalBean {
 
-    private WithdrawalDao withdrawalDao = new WithdrawalDao();
+    private WithdrawalService withdrawalService = new WithdrawalService();
     private WalletDao walletDao = new WalletDao();
 
     private Long walletId;
@@ -49,7 +49,7 @@ public class WithdrawalBean {
         withdrawal.setAmount(amount);
         withdrawal.setMethod(method);
         try {
-            withdrawalDao.debit(withdrawal);
+            withdrawalService.debit(withdrawal);
         } catch (IllegalStateException | IllegalArgumentException ex) {
             addError("Could not withdraw", ex.getMessage());
             return null;
@@ -62,7 +62,7 @@ public class WithdrawalBean {
 
     public String delete(Long withdrawalId) {
         try {
-            withdrawalDao.deleteWithReversal(withdrawalId);
+            withdrawalService.undo(withdrawalId);
         } catch (IllegalStateException ex) {
             addError("Could not undo withdrawal", ex.getMessage());
             return null;
@@ -74,7 +74,7 @@ public class WithdrawalBean {
     }
 
     public List<Withdrawal> getAllWithdrawals() {
-        return withdrawalDao.findAll();
+        return withdrawalService.findAll();
     }
 
     public List<Wallet> getAllWalletsForDropdown() {

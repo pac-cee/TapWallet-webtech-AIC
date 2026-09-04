@@ -1,9 +1,9 @@
 package rw.ac.auca.tapwallet;
 
-import rw.ac.auca.tapwallet.dao.TransactionDao;
 import rw.ac.auca.tapwallet.dao.WalletDao;
 import rw.ac.auca.tapwallet.model.Transaction;
 import rw.ac.auca.tapwallet.model.Wallet;
+import rw.ac.auca.tapwallet.service.PaymentService;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
@@ -24,7 +24,7 @@ import java.util.List;
 @ManagedBean
 public class TransactionBean {
 
-    private TransactionDao transactionDao = new TransactionDao();
+    private PaymentService paymentService = new PaymentService();
     private WalletDao walletDao = new WalletDao();
 
     private Long senderWalletId;
@@ -63,7 +63,7 @@ public class TransactionBean {
         tx.setStatus("COMPLETED");
 
         try {
-            transactionDao.transfer(tx);
+            paymentService.transfer(tx);
         } catch (IllegalStateException | IllegalArgumentException ex) {
             addError("Could not send payment", ex.getMessage());
             return null;
@@ -76,7 +76,7 @@ public class TransactionBean {
 
     public String delete(Long transactionId) {
         try {
-            transactionDao.deleteWithReversal(transactionId);
+            paymentService.reverse(transactionId);
         } catch (IllegalStateException ex) {
             addError("Could not reverse payment", ex.getMessage());
             return null;
@@ -88,7 +88,7 @@ public class TransactionBean {
     }
 
     public List<Transaction> getAllTransactions() {
-        return transactionDao.findAll();
+        return paymentService.findAll();
     }
 
     public List<Wallet> getAllWalletsForDropdown() {
