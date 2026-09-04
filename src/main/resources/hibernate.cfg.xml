@@ -21,6 +21,11 @@
         <!--      Entity mapping-->
         <mapping class="rw.ac.auca.tapwallet.model.User"/>
         <mapping class="rw.ac.auca.tapwallet.model.Wallet"/>
+        <mapping class="rw.ac.auca.tapwallet.model.NfcCard"/>
+        <mapping class="rw.ac.auca.tapwallet.model.Merchant"/>
+        <mapping class="rw.ac.auca.tapwallet.model.Transaction"/>
+        <mapping class="rw.ac.auca.tapwallet.model.TopUp"/>
+        <mapping class="rw.ac.auca.tapwallet.model.Withdrawal"/>
 
     </session-factory>
 

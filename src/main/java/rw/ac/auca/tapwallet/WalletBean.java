@@ -1,7 +1,11 @@
 package rw.ac.auca.tapwallet;
 
+import rw.ac.auca.tapwallet.dao.NfcCardDao;
+import rw.ac.auca.tapwallet.dao.TopUpDao;
+import rw.ac.auca.tapwallet.dao.TransactionDao;
 import rw.ac.auca.tapwallet.dao.UserDao;
 import rw.ac.auca.tapwallet.dao.WalletDao;
+import rw.ac.auca.tapwallet.dao.WithdrawalDao;
 import rw.ac.auca.tapwallet.model.User;
 import rw.ac.auca.tapwallet.model.Wallet;
 
@@ -9,6 +13,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.context.FacesContext;
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -22,6 +27,10 @@ public class WalletBean {
 
     private WalletDao walletDao = new WalletDao();
     private UserDao userDao = new UserDao();
+    private NfcCardDao cardDao = new NfcCardDao();
+    private TransactionDao transactionDao = new TransactionDao();
+    private TopUpDao topUpDao = new TopUpDao();
+    private WithdrawalDao withdrawalDao = new WithdrawalDao();
 
     private Long id;
     private Long ownerId;
@@ -29,31 +38,55 @@ public class WalletBean {
     private String currency = "RWF";
     private String status = "ACTIVE";
 
+    public static final List<String> CURRENCIES = Arrays.asList("RWF", "USD", "EUR");
+
     public String save() {
+        if (ownerId == null) {
+            addError("Could not save wallet", "Please choose an owner.");
+            return null;
+        }
+        if (balance == null || balance.compareTo(BigDecimal.ZERO) < 0) {
+            addError("Could not save wallet", "Balance cannot be negative.");
+            return null;
+        }
+        String cleanCurrency = currency == null ? "RWF" : currency.trim().toUpperCase();
+        if (!CURRENCIES.contains(cleanCurrency)) {
+            addError("Could not save wallet", "Currency must be RWF, USD or EUR.");
+            return null;
+        }
+
+        User owner = userDao.findById(ownerId);
+        if (owner == null) {
+            addError("Could not save wallet", "The chosen owner no longer exists.");
+            return null;
+        }
+
         Wallet wallet;
-        if (id != null) {
+        boolean creating = (id == null);
+        if (!creating) {
             wallet = walletDao.findById(id);
             if (wallet == null) {
                 return "wallet-list?faces-redirect=true";
             }
         } else {
             wallet = new Wallet();
+            // BR-01: one wallet per user.
+            if (walletDao.findByOwner(ownerId) != null) {
+                addError("Could not save wallet", "This user already has a wallet.");
+                return null;
+            }
         }
 
-        User owner = userDao.findById(ownerId);
         wallet.setOwner(owner);
         wallet.setBalance(balance);
-        wallet.setCurrency(currency);
+        wallet.setCurrency(cleanCurrency);
         wallet.setStatus(status);
 
         try {
             walletDao.save(wallet);
         } catch (RuntimeException ex) {
             // Never leak a stack trace to the page — show a friendly message and stay put.
-            if (FacesContext.getCurrentInstance() != null) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                        "Could not save wallet", "Please check the values and try again."));
-            }
+            addError("Could not save wallet", "Please check the values and try again.");
             return null;
         }
         return "wallet-list?faces-redirect=true";
@@ -72,7 +105,24 @@ public class WalletBean {
     }
 
     public String delete(Long walletId) {
-        walletDao.delete(walletId);
+        if (walletId != null) {
+            if (cardDao.findByWallet(walletId) != null) {
+                addError("Could not delete wallet", "This wallet still has an NFC card. Delete the card first.");
+                return null;
+            }
+            if (!transactionDao.findByWallet(walletId).isEmpty()
+                    || !topUpDao.findByWallet(walletId).isEmpty()
+                    || !withdrawalDao.findByWallet(walletId).isEmpty()) {
+                addError("Could not delete wallet", "This wallet still has ledger entries. Reverse them first.");
+                return null;
+            }
+        }
+        try {
+            walletDao.delete(walletId);
+        } catch (RuntimeException ex) {
+            addError("Could not delete wallet", "This wallet still has cards or ledger entries.");
+            return null;
+        }
         return "wallet-list?faces-redirect=true";
     }
 
@@ -82,6 +132,17 @@ public class WalletBean {
 
     public List<User> getAllUsersForDropdown() {
         return userDao.findAll();
+    }
+
+    public List<String> getCurrencies() {
+        return CURRENCIES;
+    }
+
+    private void addError(String summary, String detail) {
+        if (FacesContext.getCurrentInstance() != null) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, summary, detail));
+        }
     }
 
     public Long getId() {

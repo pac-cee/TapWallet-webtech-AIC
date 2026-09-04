@@ -8,6 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 /**
@@ -36,6 +37,7 @@ public class User extends Audit {
     private String email;
 
     @NotBlank(message = "Phone number is required")
+    @Pattern(regexp = "^07[2389]\\d{7}$", message = "Phone number must look like 0788123456 (MTN/Airtel format)")
     @Column(name = "phone", nullable = false)
     private String phone;
 

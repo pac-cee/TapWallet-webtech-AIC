@@ -1,6 +1,8 @@
 package rw.ac.auca.tapwallet;
 
+import rw.ac.auca.tapwallet.dao.MerchantDao;
 import rw.ac.auca.tapwallet.dao.UserDao;
+import rw.ac.auca.tapwallet.dao.WalletDao;
 import rw.ac.auca.tapwallet.model.User;
 import rw.ac.auca.tapwallet.util.PasswordUtil;
 
@@ -19,6 +21,8 @@ import java.util.List;
 public class UserBean {
 
     private UserDao userDao = new UserDao();
+    private WalletDao walletDao = new WalletDao();
+    private MerchantDao merchantDao = new MerchantDao();
 
     private Long id;
     private String fullName;
@@ -29,6 +33,25 @@ public class UserBean {
     private String status = "ACTIVE";
 
     public String save() {
+        String cleanName = fullName == null ? null : fullName.trim();
+        String cleanEmail = email == null ? null : email.trim().toLowerCase();
+        String cleanPhone = phone == null ? null : phone.trim();
+
+        if (id == null && (password == null || password.length() < 6)) {
+            addError("Could not save user", "Password must be at least 6 characters.");
+            return null;
+        }
+        if (password != null && !password.isEmpty() && password.length() < 6) {
+            addError("Could not save user", "Password must be at least 6 characters.");
+            return null;
+        }
+
+        User existing = userDao.findByEmail(cleanEmail);
+        if (existing != null && (id == null || !existing.getId().equals(id))) {
+            addError("Could not save user", "That email is already registered.");
+            return null;
+        }
+
         User user;
         if (id != null) {
             user = userDao.findById(id);
@@ -39,26 +62,27 @@ public class UserBean {
             user = new User();
         }
 
-        user.setFullName(fullName);
-        user.setEmail(email);
-        user.setPhone(phone);
+        user.setFullName(cleanName);
+        user.setEmail(cleanEmail);
+        user.setPhone(cleanPhone);
         user.setRole(role);
         user.setStatus(status);
 
         if (password != null && !password.trim().isEmpty()) {
             user.setPasswordHash(PasswordUtil.hash(password));
+        } else if (user.getPasswordHash() == null) {
+            addError("Could not save user", "Password is required.");
+            return null;
         }
 
         try {
             userDao.save(user);
         } catch (RuntimeException ex) {
             // Never leak a stack trace to the page — show a friendly message and stay put.
-            if (FacesContext.getCurrentInstance() != null) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                        "Could not save user", "Please check the values (e.g. email must be unique) and try again."));
-            }
+            addError("Could not save user", "Please check the values (e.g. email must be unique) and try again.");
             return null;
         }
+        password = null;
         return "user-list?faces-redirect=true";
     }
 
@@ -76,12 +100,32 @@ public class UserBean {
     }
 
     public String delete(Long userId) {
-        userDao.delete(userId);
+        if (walletDao.findByOwner(userId) != null) {
+            addError("Could not delete user", "This user still owns a wallet. Delete the wallet first.");
+            return null;
+        }
+        if (merchantDao.findByOperator(userId) != null) {
+            addError("Could not delete user", "This user still operates a shop. Delete the merchant first.");
+            return null;
+        }
+        try {
+            userDao.delete(userId);
+        } catch (RuntimeException ex) {
+            addError("Could not delete user", "This user is still referenced by other records.");
+            return null;
+        }
         return "user-list?faces-redirect=true";
     }
 
     public List<User> getAllUsers() {
         return userDao.findAll();
+    }
+
+    private void addError(String summary, String detail) {
+        if (FacesContext.getCurrentInstance() != null) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, summary, detail));
+        }
     }
 
     public Long getId() {

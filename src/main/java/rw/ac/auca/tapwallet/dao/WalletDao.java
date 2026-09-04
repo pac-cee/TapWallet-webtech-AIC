@@ -18,35 +18,80 @@ public class WalletDao {
 
     public Wallet save(Wallet theWallet){
         Session ss = hibernateUtil.getSessionFactory().openSession();
-        Transaction tr = ss.beginTransaction();
-        ss.saveOrUpdate(theWallet);
-        tr.commit();
-        ss.close();
+        Transaction tr = null;
+        try {
+            tr = ss.beginTransaction();
+            ss.saveOrUpdate(theWallet);
+            tr.commit();
+        } catch (RuntimeException ex) {
+            if (tr != null) {
+                tr.rollback();
+            }
+            throw ex;
+        } finally {
+            ss.close();
+        }
         return theWallet;
     }
 
     public List<Wallet> findAll(){
         Session ss = hibernateUtil.getSessionFactory().openSession();
-        List<Wallet> wallets = ss.createQuery("SELECT w FROM Wallet w", Wallet.class).list();
-        ss.close();
-        return wallets;
+        try {
+            return ss.createQuery("SELECT w FROM Wallet w ORDER BY w.id", Wallet.class).list();
+        } finally {
+            ss.close();
+        }
     }
 
     public Wallet findById(Long id){
+        if (id == null) {
+            return null;
+        }
         Session ss = hibernateUtil.getSessionFactory().openSession();
-        Wallet wallet = ss.get(Wallet.class, id);
-        ss.close();
-        return wallet;
+        try {
+            return ss.get(Wallet.class, id);
+        } finally {
+            ss.close();
+        }
+    }
+
+    // READ (by owner — one wallet per user per BR-01)
+    public Wallet findByOwner(Long ownerId){
+        if (ownerId == null) {
+            return null;
+        }
+        Session ss = hibernateUtil.getSessionFactory().openSession();
+        try {
+            List<Wallet> wallets = ss.createQuery("SELECT w FROM Wallet w WHERE w.owner.id = :ownerId", Wallet.class)
+                    .setParameter("ownerId", ownerId)
+                    .setMaxResults(1)
+                    .list();
+            return wallets.isEmpty() ? null : wallets.get(0);
+        } finally {
+            ss.close();
+        }
     }
 
     public void delete(Long id){
-        Session ss = hibernateUtil.getSessionFactory().openSession();
-        Transaction tr = ss.beginTransaction();
-        Wallet wallet = ss.get(Wallet.class, id);
-        if (wallet != null){
-            ss.delete(wallet);
+        if (id == null) {
+            return;
         }
-        tr.commit();
-        ss.close();
+        Session ss = hibernateUtil.getSessionFactory().openSession();
+        Transaction tr = null;
+        try {
+            tr = ss.beginTransaction();
+            Wallet wallet = ss.get(Wallet.class, id);
+            if (wallet != null){
+                ss.delete(wallet);
+            }
+            tr.commit();
+        } catch (RuntimeException ex) {
+            if (tr != null) {
+                tr.rollback();
+            }
+            throw ex;
+        } finally {
+            ss.close();
+        }
     }
 }
