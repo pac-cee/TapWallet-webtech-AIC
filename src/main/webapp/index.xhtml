@@ -12,8 +12,20 @@
     <f:view>
         <h1>TapWallet - NFC Digital Payment &amp; Wallet System</h1>
         <div class="nav">
-            <h:link outcome="user-list" value="Manage Users"/>
-            <h:link outcome="wallet-list" value="Manage Wallets"/>
+            <h:link outcome="user-list" value="Users"/>
+            <h:link outcome="wallet-list" value="Wallets"/>
+            <h:link outcome="card-list" value="NFC Cards"/>
+            <h:link outcome="merchant-list" value="Merchants"/>
+            <h:link outcome="transaction-list" value="Payments"/>
+            <h:link outcome="topup-list" value="Top-Ups"/>
+            <h:link outcome="withdrawal-list" value="Withdrawals"/>
+        </div>
+        <div class="table-container">
+            <p style="margin-top:0">Tap a card to pay a merchant: top up a wallet, link an NFC token,
+                then send a payment between two wallets. Every movement is validated
+                and written to one shared ledger.</p>
+            <p>Start with <h:link outcome="user-list" value="Users"/>, then
+                <h:link outcome="wallet-list" value="Wallets"/> — one wallet per user.</p>
         </div>
     </f:view>
 </h:body>

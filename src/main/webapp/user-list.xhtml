@@ -14,10 +14,12 @@
         <div class="nav">
             <h:link outcome="index" value="Home"/>
             <h:link outcome="wallet-list" value="Manage Wallets"/>
+            <h:link outcome="merchant-list" value="Manage Merchants"/>
             <h:link outcome="user-form" value="Add New User"/>
         </div>
         <div class="table-container">
             <h:form>
+                <h:messages globalOnly="true" style="color : red"/>
                 <h:dataTable value="#{userBean.allUsers}" var="u" border="1">
                     <h:column>
                         <f:facet name="header">Full Name</f:facet>
@@ -45,7 +47,8 @@
                             <f:param name="id" value="#{u.id}"/>
                         </h:link>
                         &#160;|&#160;
-                        <h:commandLink value="Delete" action="#{userBean.delete(u.id)}" styleClass="btn-danger"/>
+                        <h:commandLink value="Delete" action="#{userBean.delete(u.id)}" styleClass="btn-danger"
+                                       onclick="return confirm('Delete this user?');"/>
                     </h:column>
                 </h:dataTable>
             </h:form>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+<h:head>
+    <title>TapWallet - Merchants</title>
+    <h:outputStylesheet library="css" name="styles.css"/>
+</h:head>
+<h:body>
+    <f:view>
+        <h1>Merchants</h1>
+        <div class="nav">
+            <h:link outcome="index" value="Home"/>
+            <h:link outcome="user-list" value="Manage Users"/>
+            <h:link outcome="merchant-form" value="Register Shop"/>
+        </div>
+        <div class="table-container">
+            <h:form>
+                <h:dataTable value="#{merchantBean.allMerchants}" var="m" border="1">
+                    <h:column>
+                        <f:facet name="header">Business</f:facet>
+                        #{m.businessName}
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Code</f:facet>
+                        #{m.merchantCode}
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Operator</f:facet>
+                        #{m.operator.fullName}
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Status</f:facet>
+                        <span style="font-weight:bold">#{m.status}</span>
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Actions</f:facet>
+                        <h:link outcome="merchant-form" value="Edit" styleClass="btn-link">
+                            <f:param name="id" value="#{m.id}"/>
+                        </h:link>
+                        &#160;|&#160;
+                        <h:commandLink value="Delete" action="#{merchantBean.delete(m.id)}" styleClass="btn-danger"
+                                       onclick="return confirm('Delete this shop?');"/>
+                    </h:column>
+                </h:dataTable>
+                <h:outputText value="No shops registered yet." rendered="#{empty merchantBean.allMerchants}" style="color:#6b756d"/>
+            </h:form>
+        </div>
+    </f:view>
+</h:body>
+</html>

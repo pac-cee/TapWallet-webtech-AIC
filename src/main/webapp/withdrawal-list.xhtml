@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+<h:head>
+    <title>TapWallet - Withdrawals</title>
+    <h:outputStylesheet library="css" name="styles.css"/>
+</h:head>
+<h:body>
+    <f:view>
+        <h1>Withdrawals</h1>
+        <div class="nav">
+            <h:link outcome="index" value="Home"/>
+            <h:link outcome="wallet-list" value="Manage Wallets"/>
+            <h:link outcome="withdrawal-form" value="New Withdrawal"/>
+        </div>
+        <div class="table-container">
+            <h:form>
+                <h:messages globalOnly="true" style="color : red"/>
+                <h:dataTable value="#{withdrawalBean.allWithdrawals}" var="w" border="1">
+                    <h:column>
+                        <f:facet name="header">Wallet Owner</f:facet>
+                        #{w.wallet.owner.fullName}
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Amount</f:facet>
+                        #{w.amount}
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Method</f:facet>
+                        #{w.method}
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Action</f:facet>
+                        <h:commandLink value="Undo" action="#{withdrawalBean.delete(w.id)}" styleClass="btn-danger"
+                                       onclick="return confirm('Undo this withdrawal? The amount is paid back.');"/>
+                    </h:column>
+                </h:dataTable>
+                <h:outputText value="No withdrawals yet." rendered="#{empty withdrawalBean.allWithdrawals}" style="color:#6b756d"/>
+            </h:form>
+        </div>
+    </f:view>
+</h:body>
+</html>

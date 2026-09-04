@@ -34,10 +34,13 @@
         <div class="nav">
             <h:link outcome="index" value="Home"/>
             <h:link outcome="user-list" value="Manage Users"/>
+            <h:link outcome="card-list" value="Manage Cards"/>
+            <h:link outcome="transaction-list" value="Payments"/>
             <h:link outcome="wallet-form" value="Add New Wallet"/>
         </div>
         <div class="table-container">
             <h:form>
+                <h:messages globalOnly="true" style="color : red"/>
                 <h:dataTable value="#{walletBean.allWallets}" var="w" border="1">
                     <h:column>
                         <f:facet name="header">Owner</f:facet>
@@ -61,7 +64,8 @@
                             <f:param name="id" value="#{w.id}"/>
                         </h:link>
                         &#160;|&#160;
-                        <h:commandLink value="Delete" action="#{walletBean.delete(w.id)}" styleClass="btn-danger"/>
+                        <h:commandLink value="Delete" action="#{walletBean.delete(w.id)}" styleClass="btn-danger"
+                                       onclick="return confirm('Delete this wallet?');"/>
                     </h:column>
                 </h:dataTable>
             </h:form>

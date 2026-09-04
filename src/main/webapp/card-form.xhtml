@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+<h:head>
+    <title>TapWallet - Card Form</title>
+    <h:outputStylesheet library="css" name="styles.css"/>
+</h:head>
+<h:body>
+    <f:view>
+        <f:metadata>
+            <f:viewParam name="id" value="#{nfcCardBean.id}"/>
+            <f:event type="preRenderView" listener="#{nfcCardBean.loadForEdit}"/>
+        </f:metadata>
+
+        <h1>#{nfcCardBean.id == null ? 'Link Card' : 'Edit Card'}</h1>
+        <div class="nav">
+            <h:link outcome="card-list" value="Back to Cards"/>
+        </div>
+
+        <div class="form-container">
+            <h:form>
+                <h:messages globalOnly="true" style="color : red"/>
+                <h:panelGrid columns="3">
+                    <h:outputLabel value="Wallet" for="wallet"/>
+                    <h:selectOneMenu id="wallet" value="#{nfcCardBean.walletId}" required="true" label="Wallet">
+                        <f:selectItems value="#{nfcCardBean.allWalletsForDropdown}" var="w"
+                                       itemValue="#{w.id}" itemLabel="#{w.owner.fullName} - #{w.balance} #{w.currency}"/>
+                    </h:selectOneMenu>
+                    <h:message for="wallet" style="color : red"/>
+
+                    <h:outputLabel value="Token (blank = auto)" for="token"/>
+                    <h:inputText id="token" value="#{nfcCardBean.token}" label="Token">
+                        <f:validateLength minimum="8" maximum="32"/>
+                    </h:inputText>
+                    <h:message for="token" style="color : red"/>
+
+                    <h:outputLabel value="Status" for="status"/>
+                    <h:selectOneMenu id="status" value="#{nfcCardBean.status}">
+                        <f:selectItem itemValue="ACTIVE" itemLabel="Active"/>
+                        <f:selectItem itemValue="FROZEN" itemLabel="Frozen"/>
+                    </h:selectOneMenu>
+                    <h:message for="status" style="color : red"/>
+
+                    <h:commandButton value="Save" action="#{nfcCardBean.save()}"/>
+                </h:panelGrid>
+            </h:form>
+        </div>
+    </f:view>
+</h:body>
+</html>

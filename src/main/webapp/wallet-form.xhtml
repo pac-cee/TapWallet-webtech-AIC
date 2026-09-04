@@ -37,9 +37,9 @@
                     <h:message for="balance" style="color : red"/>
 
                     <h:outputLabel value="Currency" for="currency"/>
-                    <h:inputText id="currency" value="#{walletBean.currency}" required="true" label="Currency">
-                        <f:validateLength minimum="3" maximum="3"/>
-                    </h:inputText>
+                    <h:selectOneMenu id="currency" value="#{walletBean.currency}" required="true" label="Currency">
+                        <f:selectItems value="#{walletBean.currencies}" var="c" itemValue="#{c}" itemLabel="#{c}"/>
+                    </h:selectOneMenu>
                     <h:message for="currency" style="color : red"/>
 
                     <h:outputLabel value="Status" for="status"/>

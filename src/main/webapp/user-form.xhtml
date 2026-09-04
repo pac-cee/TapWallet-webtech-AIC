@@ -39,7 +39,9 @@
                     <h:message for="phone" style="color : red"/>
 
                     <h:outputLabel value="Password" for="password"/>
-                    <h:inputSecret id="password" value="#{userBean.password}" required="#{userBean.id == null}" label="Password"/>
+                    <h:inputSecret id="password" value="#{userBean.password}" required="#{userBean.id == null}" label="Password">
+                        <f:validateLength minimum="6" maximum="72"/>
+                    </h:inputSecret>
                     <h:message for="password" style="color : red"/>
 
                     <h:outputLabel value="Role" for="role"/>
