@@ -47,7 +47,15 @@ nothing to install or configure.
 ## What's implemented
 
 - Full CRUD for **User** (full name, email, phone, hashed password, role,
-  status) and **Wallet** (owner, balance, currency, status).
+  status) and **Wallet** (owner, balance, currency, status) — one wallet
+  per user, duplicate emails rejected, guarded deletes.
+- Full CRUD for **NfcCard** (token, wallet, status) and **Merchant**
+  (business name, code, operator, status) — one card per wallet, one
+  shop per operator.
+- Money movements with atomic ledger logic: **TopUp** credits,
+  **Withdrawal** debits (insufficient funds rejected), **Transaction**
+  debits sender + credits receiver in one DB transaction; deleting a
+  movement reverses it (fails cleanly if balances no longer allow it).
 - All 3 required validation types: standard JSF validators
   (`f:validateLength`, `f:validateDoubleRange`), a custom validator
   (`PhoneValidator`), and Bean Validation (JSR-303 annotations).
@@ -66,7 +74,6 @@ https://claude.ai/code/artifact/d0320ea9-7dd3-4b5c-b8e3-41bcfdf0e459
 
 ## What's documented but not implemented
 
-The rest of the TapWallet domain (NFC cards, merchants, transactions,
-top-ups/withdrawals) is described in the Phase-1 project documentation as
-the intended full system; this repository implements the CRUD slice
-required by Assignment 3, req. #2.
+Nothing — the Phase-1 class diagram is now fully built. `AuditLog` from
+the diagram is covered by the shared `Audit` superclass
+(`createdAt`/`updatedAt` on every entity) rather than a separate table.
