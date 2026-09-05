@@ -12,18 +12,8 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * The Class TransactionBean.
- *
- * <p>Ledger entries are created and (with automatic reversal) deleted —
- * never edited, so the money trail stays trustworthy.</p>
- *
- * @author Pacifique Bakundukize
- * @version 1.0
- */
 @ManagedBean
 public class TransactionBean {
-
     private PaymentService paymentService = new PaymentService();
     private WalletDao walletDao = new WalletDao();
 

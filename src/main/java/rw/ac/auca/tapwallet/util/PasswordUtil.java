@@ -6,18 +6,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Base64;
 
-/**
- * The Class PasswordUtil.
- *
- * Hashes and verifies passwords using salted SHA-256. The salt travels
- * alongside the hash (separated by ':') so verification never needs a
- * second lookup, and a plaintext password is never stored anywhere.
- *
- * @author Pacifique Bakundukize
- * @version 1.0
- */
 public class PasswordUtil {
-
     private static final int SALT_LENGTH = 16;
 
     public static String hash(String plainPassword) {

@@ -9,33 +9,19 @@ import rw.ac.auca.tapwallet.model.Wallet;
 import java.math.BigDecimal;
 import java.util.List;
 
-/**
- * The Class PaymentService.
- *
- * <p>Owns the payment use-cases: every money movement is validated and
- * applied atomically (debit sender, credit receiver, persist the ledger
- * row) inside one Hibernate transaction, so the two balances can never
- * drift apart. Beans call here; they never touch the ledger directly.</p>
- *
- * @author Pacifique Bakundukize
- * @version 1.0
- */
 public class PaymentService {
-
     HibernateUtil hibernateUtil = new HibernateUtil();
     TransactionDao transactionDao = new TransactionDao();
 
     private static final BigDecimal MIN_AMOUNT = new BigDecimal("0.01");
 
-    // USE-CASE: send a payment (debit + credit + ledger row, atomically).
     public rw.ac.auca.tapwallet.model.Transaction transfer(rw.ac.auca.tapwallet.model.Transaction theTx){
-        // step 1: create session
         Session ss = hibernateUtil.getSessionFactory().openSession();
-        // step 2: create transaction
+
         Transaction tr = null;
         try {
             tr = ss.beginTransaction();
-            // step 3: perform the use-case
+
             Wallet sender = ss.get(Wallet.class, theTx.getSenderWallet().getId());
             Wallet receiver = ss.get(Wallet.class, theTx.getReceiverWallet().getId());
             if (sender == null || receiver == null) {
@@ -61,7 +47,7 @@ public class PaymentService {
             theTx.setSenderWallet(sender);
             theTx.setReceiverWallet(receiver);
             ss.save(theTx);
-            // step 4: commit transaction
+
             tr.commit();
         } catch (RuntimeException ex) {
             if (tr != null) {
@@ -69,13 +55,11 @@ public class PaymentService {
             }
             throw ex;
         } finally {
-            // step 5: close session
             ss.close();
         }
         return theTx;
     }
 
-    // USE-CASE: reverse a payment (credit sender back + debit receiver, then remove row).
     public void reverse(Long id){
         if (id == null) {
             return;
@@ -108,7 +92,6 @@ public class PaymentService {
         }
     }
 
-    // READ (delegated to the DAO — no rules involved)
     public List<rw.ac.auca.tapwallet.model.Transaction> findAll(){
         return transactionDao.findAll();
     }

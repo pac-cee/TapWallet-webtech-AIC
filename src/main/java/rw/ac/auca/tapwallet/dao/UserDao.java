@@ -6,27 +6,18 @@ import rw.ac.auca.tapwallet.model.User;
 
 import java.util.List;
 
-/**
- * The Class UserDao.
- *
- * @author Pacifique Bakundukize
- * @version 1.0
- */
 public class UserDao {
-
     HibernateUtil hibernateUtil = new HibernateUtil();
 
-    // CREATE / UPDATE
     public User save(User theUser){
-        // step 1: create session
         Session ss = hibernateUtil.getSessionFactory().openSession();
-        // step 2: create transaction
+
         Transaction tr = null;
         try {
             tr = ss.beginTransaction();
-            // step 3: perform action
+
             ss.saveOrUpdate(theUser);
-            // step 4: commit transaction
+
             tr.commit();
         } catch (RuntimeException ex) {
             if (tr != null) {
@@ -34,13 +25,11 @@ public class UserDao {
             }
             throw ex;
         } finally {
-            // step 5: close session
             ss.close();
         }
         return theUser;
     }
 
-    // READ (all)
     public List<User> findAll(){
         Session ss = hibernateUtil.getSessionFactory().openSession();
         try {
@@ -50,7 +39,6 @@ public class UserDao {
         }
     }
 
-    // READ (one)
     public User findById(Long id){
         if (id == null) {
             return null;
@@ -63,7 +51,6 @@ public class UserDao {
         }
     }
 
-    // READ (by email, parameterized — no string-built HQL)
     public User findByEmail(String email){
         if (email == null) {
             return null;
@@ -80,7 +67,6 @@ public class UserDao {
         }
     }
 
-    // DELETE
     public void delete(Long id){
         if (id == null) {
             return;

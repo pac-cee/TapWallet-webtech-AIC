@@ -12,16 +12,9 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-/**
- * The Class Merchant.
- *
- * @author Pacifique Bakundukize
- * @version 1.0
- */
 @Entity
 @Table(name = "merchant")
 public class Merchant extends Audit {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "merchant_id")

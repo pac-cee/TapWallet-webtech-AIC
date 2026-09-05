@@ -6,12 +6,6 @@ import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import java.time.LocalDateTime;
 
-/**
- * The Class Audit.
- *
- * @author Pacifique Bakundukize
- * @version 1.0
- */
 @MappedSuperclass
 public class Audit {
     @Column(name = "created_at", nullable = false, updatable = false)

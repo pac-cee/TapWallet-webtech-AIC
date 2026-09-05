@@ -8,18 +8,8 @@ import javax.faces.validator.Validator;
 import javax.faces.validator.ValidatorException;
 import java.util.regex.Pattern;
 
-/**
- * The Class PhoneValidator.
- *
- * Custom JSF validator (validation type 2 of 3) that checks a phone
- * number matches the Rwandan MTN/Airtel mobile format: 07[2389]xxxxxxx.
- *
- * @author Pacifique Bakundukize
- * @version 1.0
- */
 @FacesValidator("phoneValidator")
 public class PhoneValidator implements Validator {
-
     private static final Pattern RWANDAN_PHONE = Pattern.compile("^07[2389]\\d{7}$");
 
     public static boolean isValidPhone(String phone) {

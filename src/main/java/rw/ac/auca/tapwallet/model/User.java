@@ -11,16 +11,9 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
-/**
- * The Class User.
- *
- * @author Pacifique Bakundukize
- * @version 1.0
- */
 @Entity
 @Table(name = "app_user")
 public class User extends Audit {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")

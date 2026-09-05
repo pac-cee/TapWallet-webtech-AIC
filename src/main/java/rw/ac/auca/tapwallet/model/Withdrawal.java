@@ -12,16 +12,9 @@ import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
-/**
- * The Class Withdrawal.
- *
- * @author Pacifique Bakundukize
- * @version 1.0
- */
 @Entity
 @Table(name = "withdrawal")
 public class Withdrawal extends Audit {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "withdrawal_id")

@@ -5,32 +5,18 @@ import org.hibernate.Transaction;
 
 import java.util.List;
 
-/**
- * The Class TransactionDao.
- *
- * <p>Pure persistence: CRUD plus finder queries. The money-movement
- * use-cases (transfer, reversal) live in
- * {@code rw.ac.auca.tapwallet.service.PaymentService}, which owns the
- * business rules and the transaction boundary around them.</p>
- *
- * @author Pacifique Bakundukize
- * @version 1.0
- */
 public class TransactionDao {
-
     HibernateUtil hibernateUtil = new HibernateUtil();
 
-    // CREATE / UPDATE
     public rw.ac.auca.tapwallet.model.Transaction save(rw.ac.auca.tapwallet.model.Transaction theTx){
-        // step 1: create session
         Session ss = hibernateUtil.getSessionFactory().openSession();
-        // step 2: create transaction
+
         Transaction tr = null;
         try {
             tr = ss.beginTransaction();
-            // step 3: perform action
+
             ss.saveOrUpdate(theTx);
-            // step 4: commit transaction
+
             tr.commit();
         } catch (RuntimeException ex) {
             if (tr != null) {
@@ -38,13 +24,11 @@ public class TransactionDao {
             }
             throw ex;
         } finally {
-            // step 5: close session
             ss.close();
         }
         return theTx;
     }
 
-    // READ (all)
     public List<rw.ac.auca.tapwallet.model.Transaction> findAll(){
         Session ss = hibernateUtil.getSessionFactory().openSession();
         try {
@@ -55,7 +39,6 @@ public class TransactionDao {
         }
     }
 
-    // READ (one)
     public rw.ac.auca.tapwallet.model.Transaction findById(Long id){
         if (id == null) {
             return null;
@@ -68,7 +51,6 @@ public class TransactionDao {
         }
     }
 
-    // READ (ledger for one wallet, either side)
     public List<rw.ac.auca.tapwallet.model.Transaction> findByWallet(Long walletId){
         Session ss = hibernateUtil.getSessionFactory().openSession();
         try {
@@ -81,7 +63,6 @@ public class TransactionDao {
         }
     }
 
-    // DELETE
     public void delete(Long id){
         if (id == null) {
             return;

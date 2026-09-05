@@ -12,16 +12,9 @@ import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
-/**
- * The Class TopUp.
- *
- * @author Pacifique Bakundukize
- * @version 1.0
- */
 @Entity
 @Table(name = "top_up")
 public class TopUp extends Audit {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "topup_id")

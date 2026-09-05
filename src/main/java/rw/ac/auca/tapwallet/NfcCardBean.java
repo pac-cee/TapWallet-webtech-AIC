@@ -11,15 +11,8 @@ import javax.faces.context.FacesContext;
 import java.util.List;
 import java.util.UUID;
 
-/**
- * The Class NfcCardBean.
- *
- * @author Pacifique Bakundukize
- * @version 1.0
- */
 @ManagedBean
 public class NfcCardBean {
-
     private NfcCardDao cardDao = new NfcCardDao();
     private WalletDao walletDao = new WalletDao();
 

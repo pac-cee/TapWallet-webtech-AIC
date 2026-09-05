@@ -11,15 +11,8 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.context.FacesContext;
 import java.util.List;
 
-/**
- * The Class UserBean.
- *
- * @author Pacifique Bakundukize
- * @version 1.0
- */
 @ManagedBean
 public class UserBean {
-
     private UserDao userDao = new UserDao();
     private WalletDao walletDao = new WalletDao();
     private MerchantDao merchantDao = new MerchantDao();
@@ -78,7 +71,6 @@ public class UserBean {
         try {
             userDao.save(user);
         } catch (RuntimeException ex) {
-            // Never leak a stack trace to the page — show a friendly message and stay put.
             addError("Could not save user", "Please check the values (e.g. email must be unique) and try again.");
             return null;
         }

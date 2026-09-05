@@ -10,31 +10,19 @@ import rw.ac.auca.tapwallet.model.Withdrawal;
 import java.math.BigDecimal;
 import java.util.List;
 
-/**
- * The Class WithdrawalService.
- *
- * <p>Owns the withdrawal use-cases: debit the wallet and persist the row
- * atomically. Beans call here; they never touch the ledger directly.</p>
- *
- * @author Pacifique Bakundukize
- * @version 1.0
- */
 public class WithdrawalService {
-
     HibernateUtil hibernateUtil = new HibernateUtil();
     WithdrawalDao withdrawalDao = new WithdrawalDao();
 
     private static final BigDecimal MIN_AMOUNT = new BigDecimal("0.01");
 
-    // USE-CASE: withdraw (debit wallet + ledger row, atomically).
     public Withdrawal debit(Withdrawal theWithdrawal){
-        // step 1: create session
         Session ss = hibernateUtil.getSessionFactory().openSession();
-        // step 2: create transaction
+
         Transaction tr = null;
         try {
             tr = ss.beginTransaction();
-            // step 3: perform the use-case
+
             Wallet wallet = ss.get(Wallet.class, theWithdrawal.getWallet().getId());
             if (wallet == null) {
                 throw new IllegalArgumentException("Wallet must exist.");
@@ -52,7 +40,7 @@ public class WithdrawalService {
             ss.update(wallet);
             theWithdrawal.setWallet(wallet);
             ss.save(theWithdrawal);
-            // step 4: commit transaction
+
             tr.commit();
         } catch (RuntimeException ex) {
             if (tr != null) {
@@ -60,13 +48,11 @@ public class WithdrawalService {
             }
             throw ex;
         } finally {
-            // step 5: close session
             ss.close();
         }
         return theWithdrawal;
     }
 
-    // USE-CASE: undo a withdrawal (credit wallet back, then remove row).
     public void undo(Long id){
         if (id == null) {
             return;
@@ -93,7 +79,6 @@ public class WithdrawalService {
         }
     }
 
-    // READ (delegated to the DAO — no rules involved)
     public List<Withdrawal> findAll(){
         return withdrawalDao.findAll();
     }

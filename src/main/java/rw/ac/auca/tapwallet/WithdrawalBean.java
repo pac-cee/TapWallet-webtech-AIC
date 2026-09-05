@@ -12,15 +12,8 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * The Class WithdrawalBean.
- *
- * @author Pacifique Bakundukize
- * @version 1.0
- */
 @ManagedBean
 public class WithdrawalBean {
-
     private WithdrawalService withdrawalService = new WithdrawalService();
     private WalletDao walletDao = new WalletDao();
 

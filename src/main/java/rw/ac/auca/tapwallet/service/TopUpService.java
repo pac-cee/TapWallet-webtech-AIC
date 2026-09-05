@@ -10,31 +10,19 @@ import rw.ac.auca.tapwallet.model.Wallet;
 import java.math.BigDecimal;
 import java.util.List;
 
-/**
- * The Class TopUpService.
- *
- * <p>Owns the top-up use-cases: credit the wallet and persist the row
- * atomically. Beans call here; they never touch the ledger directly.</p>
- *
- * @author Pacifique Bakundukize
- * @version 1.0
- */
 public class TopUpService {
-
     HibernateUtil hibernateUtil = new HibernateUtil();
     TopUpDao topUpDao = new TopUpDao();
 
     private static final BigDecimal MIN_AMOUNT = new BigDecimal("0.01");
 
-    // USE-CASE: top up (credit wallet + ledger row, atomically).
     public TopUp credit(TopUp theTopUp){
-        // step 1: create session
         Session ss = hibernateUtil.getSessionFactory().openSession();
-        // step 2: create transaction
+
         Transaction tr = null;
         try {
             tr = ss.beginTransaction();
-            // step 3: perform the use-case
+
             Wallet wallet = ss.get(Wallet.class, theTopUp.getWallet().getId());
             if (wallet == null) {
                 throw new IllegalArgumentException("Wallet must exist.");
@@ -49,7 +37,7 @@ public class TopUpService {
             ss.update(wallet);
             theTopUp.setWallet(wallet);
             ss.save(theTopUp);
-            // step 4: commit transaction
+
             tr.commit();
         } catch (RuntimeException ex) {
             if (tr != null) {
@@ -57,13 +45,11 @@ public class TopUpService {
             }
             throw ex;
         } finally {
-            // step 5: close session
             ss.close();
         }
         return theTopUp;
     }
 
-    // USE-CASE: undo a top-up (debit wallet, then remove row).
     public void undo(Long id){
         if (id == null) {
             return;
@@ -93,7 +79,6 @@ public class TopUpService {
         }
     }
 
-    // READ (delegated to the DAO — no rules involved)
     public List<TopUp> findAll(){
         return topUpDao.findAll();
     }

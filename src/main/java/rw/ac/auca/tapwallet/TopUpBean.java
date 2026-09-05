@@ -12,15 +12,8 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * The Class TopUpBean.
- *
- * @author Pacifique Bakundukize
- * @version 1.0
- */
 @ManagedBean
 public class TopUpBean {
-
     private TopUpService topUpService = new TopUpService();
     private WalletDao walletDao = new WalletDao();
 

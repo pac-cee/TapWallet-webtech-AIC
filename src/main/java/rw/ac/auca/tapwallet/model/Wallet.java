@@ -12,16 +12,9 @@ import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
-/**
- * The Class Wallet.
- *
- * @author Pacifique Bakundukize
- * @version 1.0
- */
 @Entity
 @Table(name = "wallet")
 public class Wallet extends Audit {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "wallet_id")

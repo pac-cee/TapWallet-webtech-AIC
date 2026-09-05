@@ -10,15 +10,8 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.context.FacesContext;
 import java.util.List;
 
-/**
- * The Class MerchantBean.
- *
- * @author Pacifique Bakundukize
- * @version 1.0
- */
 @ManagedBean
 public class MerchantBean {
-
     private MerchantDao merchantDao = new MerchantDao();
     private UserDao userDao = new UserDao();
 

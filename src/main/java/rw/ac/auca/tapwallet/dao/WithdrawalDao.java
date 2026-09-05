@@ -6,30 +6,18 @@ import rw.ac.auca.tapwallet.model.Withdrawal;
 
 import java.util.List;
 
-/**
- * The Class WithdrawalDao.
- *
- * <p>Pure persistence: CRUD plus finder queries. The debit/undo
- * use-cases live in {@code rw.ac.auca.tapwallet.service.WithdrawalService}.</p>
- *
- * @author Pacifique Bakundukize
- * @version 1.0
- */
 public class WithdrawalDao {
-
     HibernateUtil hibernateUtil = new HibernateUtil();
 
-    // CREATE / UPDATE
     public Withdrawal save(Withdrawal theWithdrawal){
-        // step 1: create session
         Session ss = hibernateUtil.getSessionFactory().openSession();
-        // step 2: create transaction
+
         Transaction tr = null;
         try {
             tr = ss.beginTransaction();
-            // step 3: perform action
+
             ss.saveOrUpdate(theWithdrawal);
-            // step 4: commit transaction
+
             tr.commit();
         } catch (RuntimeException ex) {
             if (tr != null) {
@@ -37,13 +25,11 @@ public class WithdrawalDao {
             }
             throw ex;
         } finally {
-            // step 5: close session
             ss.close();
         }
         return theWithdrawal;
     }
 
-    // READ (all)
     public List<Withdrawal> findAll(){
         Session ss = hibernateUtil.getSessionFactory().openSession();
         try {
@@ -53,7 +39,6 @@ public class WithdrawalDao {
         }
     }
 
-    // READ (one)
     public Withdrawal findById(Long id){
         if (id == null) {
             return null;
@@ -66,7 +51,6 @@ public class WithdrawalDao {
         }
     }
 
-    // READ (for one wallet)
     public List<Withdrawal> findByWallet(Long walletId){
         Session ss = hibernateUtil.getSessionFactory().openSession();
         try {
@@ -78,7 +62,6 @@ public class WithdrawalDao {
         }
     }
 
-    // DELETE
     public void delete(Long id){
         if (id == null) {
             return;

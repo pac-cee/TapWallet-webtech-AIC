@@ -6,14 +6,7 @@ import rw.ac.auca.tapwallet.model.Wallet;
 
 import java.util.List;
 
-/**
- * The Class WalletDao.
- *
- * @author Pacifique Bakundukize
- * @version 1.0
- */
 public class WalletDao {
-
     HibernateUtil hibernateUtil = new HibernateUtil();
 
     public Wallet save(Wallet theWallet){
@@ -55,7 +48,6 @@ public class WalletDao {
         }
     }
 
-    // READ (by owner — one wallet per user per BR-01)
     public Wallet findByOwner(Long ownerId){
         if (ownerId == null) {
             return null;

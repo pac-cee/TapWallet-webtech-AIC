@@ -6,27 +6,18 @@ import rw.ac.auca.tapwallet.model.Merchant;
 
 import java.util.List;
 
-/**
- * The Class MerchantDao.
- *
- * @author Pacifique Bakundukize
- * @version 1.0
- */
 public class MerchantDao {
-
     HibernateUtil hibernateUtil = new HibernateUtil();
 
-    // CREATE / UPDATE
     public Merchant save(Merchant theMerchant){
-        // step 1: create session
         Session ss = hibernateUtil.getSessionFactory().openSession();
-        // step 2: create transaction
+
         Transaction tr = null;
         try {
             tr = ss.beginTransaction();
-            // step 3: perform action
+
             ss.saveOrUpdate(theMerchant);
-            // step 4: commit transaction
+
             tr.commit();
         } catch (RuntimeException ex) {
             if (tr != null) {
@@ -34,13 +25,11 @@ public class MerchantDao {
             }
             throw ex;
         } finally {
-            // step 5: close session
             ss.close();
         }
         return theMerchant;
     }
 
-    // READ (all)
     public List<Merchant> findAll(){
         Session ss = hibernateUtil.getSessionFactory().openSession();
         try {
@@ -50,7 +39,6 @@ public class MerchantDao {
         }
     }
 
-    // READ (one)
     public Merchant findById(Long id){
         if (id == null) {
             return null;
@@ -63,7 +51,6 @@ public class MerchantDao {
         }
     }
 
-    // READ (by code, parameterized)
     public Merchant findByCode(String code){
         if (code == null) {
             return null;
@@ -80,7 +67,6 @@ public class MerchantDao {
         }
     }
 
-    // READ (by operator — one shop per user)
     public Merchant findByOperator(Long operatorId){
         if (operatorId == null) {
             return null;
@@ -97,7 +83,6 @@ public class MerchantDao {
         }
     }
 
-    // DELETE
     public void delete(Long id){
         if (id == null) {
             return;

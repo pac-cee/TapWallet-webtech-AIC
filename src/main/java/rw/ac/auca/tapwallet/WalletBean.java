@@ -16,15 +16,8 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * The Class WalletBean.
- *
- * @author Pacifique Bakundukize
- * @version 1.0
- */
 @ManagedBean
 public class WalletBean {
-
     private WalletDao walletDao = new WalletDao();
     private UserDao userDao = new UserDao();
     private NfcCardDao cardDao = new NfcCardDao();
@@ -70,7 +63,7 @@ public class WalletBean {
             }
         } else {
             wallet = new Wallet();
-            // BR-01: one wallet per user.
+
             if (walletDao.findByOwner(ownerId) != null) {
                 addError("Could not save wallet", "This user already has a wallet.");
                 return null;
@@ -85,7 +78,6 @@ public class WalletBean {
         try {
             walletDao.save(wallet);
         } catch (RuntimeException ex) {
-            // Never leak a stack trace to the page — show a friendly message and stay put.
             addError("Could not save wallet", "Please check the values and try again.");
             return null;
         }
