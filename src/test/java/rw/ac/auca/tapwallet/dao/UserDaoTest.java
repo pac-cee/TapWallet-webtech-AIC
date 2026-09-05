@@ -14,7 +14,7 @@ public class UserDaoTest {
     @Test
     public void savingAUserAssignsAnId() {
         User user = new User("Test Save User", "save-" + System.nanoTime() + "@example.com",
-                "0788123456", "hash", "CUSTOMER", "ACTIVE");
+                "0788123456", "hash", "ACTIVE");
         userDao.save(user);
         assertNotNull(user.getId());
     }
@@ -22,7 +22,7 @@ public class UserDaoTest {
     @Test
     public void findByIdReturnsWhatWasSaved() {
         User user = new User("Find Me", "find-" + System.nanoTime() + "@example.com",
-                "0788123456", "hash", "CUSTOMER", "ACTIVE");
+                "0788123456", "hash", "ACTIVE");
         userDao.save(user);
 
         User found = userDao.findById(user.getId());
@@ -33,7 +33,7 @@ public class UserDaoTest {
     @Test
     public void savingWithAnExistingIdUpdatesInPlace() {
         User user = new User("Before Update", "update-" + System.nanoTime() + "@example.com",
-                "0788123456", "hash", "CUSTOMER", "ACTIVE");
+                "0788123456", "hash", "ACTIVE");
         userDao.save(user);
 
         user.setFullName("After Update");
@@ -46,7 +46,7 @@ public class UserDaoTest {
     @Test
     public void deleteRemovesTheUser() {
         User user = new User("Delete Me", "delete-" + System.nanoTime() + "@example.com",
-                "0788123456", "hash", "CUSTOMER", "ACTIVE");
+                "0788123456", "hash", "ACTIVE");
         userDao.save(user);
         Long id = user.getId();
 
@@ -58,7 +58,7 @@ public class UserDaoTest {
     @Test
     public void findAllIncludesASavedUser() {
         User user = new User("List Me", "list-" + System.nanoTime() + "@example.com",
-                "0788123456", "hash", "CUSTOMER", "ACTIVE");
+                "0788123456", "hash", "ACTIVE");
         userDao.save(user);
 
         List<User> all = userDao.findAll();

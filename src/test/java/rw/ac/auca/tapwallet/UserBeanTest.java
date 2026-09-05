@@ -18,7 +18,6 @@ public class UserBeanTest {
         bean.setEmail("newuser-" + System.nanoTime() + "@example.com");
         bean.setPhone("0788123456");
         bean.setPassword("PlainPassword1");
-        bean.setRole("CUSTOMER");
         bean.setStatus("ACTIVE");
 
         String outcome = bean.save();
@@ -36,7 +35,7 @@ public class UserBeanTest {
     @Test
     public void editingAUserWithABlankPasswordKeepsTheOldHash() {
         User user = new User("Edit Me", "edit-" + System.nanoTime() + "@example.com",
-                "0788123456", PasswordUtil.hash("OriginalPassword"), "CUSTOMER", "ACTIVE");
+                "0788123456", PasswordUtil.hash("OriginalPassword"), "ACTIVE");
         userDao.save(user);
 
         UserBean bean = new UserBean();
@@ -55,7 +54,7 @@ public class UserBeanTest {
     @Test
     public void deleteRemovesTheUser() {
         User user = new User("Delete Via Bean", "deletebean-" + System.nanoTime() + "@example.com",
-                "0788123456", PasswordUtil.hash("pw"), "CUSTOMER", "ACTIVE");
+                "0788123456", PasswordUtil.hash("pw"), "ACTIVE");
         userDao.save(user);
 
         UserBean bean = new UserBean();

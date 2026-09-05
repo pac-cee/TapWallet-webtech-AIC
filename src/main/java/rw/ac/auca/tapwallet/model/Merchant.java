@@ -8,9 +8,11 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "merchant")
@@ -37,6 +39,11 @@ public class Merchant extends Audit {
 
     @Column(name = "status", nullable = false)
     private String status = "ACTIVE";
+
+    @NotNull(message = "Balance is required")
+    @DecimalMin(value = "0.0", message = "Balance cannot be negative")
+    @Column(name = "balance", nullable = false)
+    private BigDecimal balance = BigDecimal.ZERO;
 
     public Merchant() {
     }
@@ -86,5 +93,13 @@ public class Merchant extends Audit {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public BigDecimal getBalance() {
+        return balance;
+    }
+
+    public void setBalance(BigDecimal balance) {
+        this.balance = balance;
     }
 }

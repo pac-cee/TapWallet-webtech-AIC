@@ -18,7 +18,7 @@ public class WalletBeanTest {
     private User newOwner(String label) {
         String emailLocalPart = label.toLowerCase().replace(" ", "") + "-" + System.nanoTime();
         User owner = new User(label, emailLocalPart + "@example.com",
-                "0788123456", "hash", "CUSTOMER", "ACTIVE");
+                "0788123456", "hash", "ACTIVE");
         userDao.save(owner);
         return owner;
     }

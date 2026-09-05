@@ -1,6 +1,8 @@
 package rw.ac.auca.tapwallet;
 
+import rw.ac.auca.tapwallet.dao.MerchantDao;
 import rw.ac.auca.tapwallet.dao.WalletDao;
+import rw.ac.auca.tapwallet.model.Merchant;
 import rw.ac.auca.tapwallet.model.Transaction;
 import rw.ac.auca.tapwallet.model.Wallet;
 import rw.ac.auca.tapwallet.service.PaymentService;
@@ -9,28 +11,22 @@ import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.context.FacesContext;
 import java.math.BigDecimal;
-import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @ManagedBean
 public class TransactionBean {
     private PaymentService paymentService = new PaymentService();
     private WalletDao walletDao = new WalletDao();
+    private MerchantDao merchantDao = new MerchantDao();
 
     private Long senderWalletId;
-    private Long receiverWalletId;
+    private Long merchantId;
     private BigDecimal amount;
-    private String type = "PAYMENT";
-
-    public static final List<String> TYPES = Arrays.asList("PAYMENT", "TRANSFER");
 
     public String save() {
-        if (senderWalletId == null || receiverWalletId == null) {
-            addError("Could not send payment", "Please choose both wallets.");
-            return null;
-        }
-        if (senderWalletId.equals(receiverWalletId)) {
-            addError("Could not send payment", "Sender and receiver must be different wallets.");
+        if (senderWalletId == null || merchantId == null) {
+            addError("Could not send payment", "Please choose both a wallet and a merchant.");
             return null;
         }
         if (amount == null || amount.compareTo(new BigDecimal("0.01")) < 0) {
@@ -39,21 +35,20 @@ public class TransactionBean {
         }
 
         Wallet sender = walletDao.findById(senderWalletId);
-        Wallet receiver = walletDao.findById(receiverWalletId);
-        if (sender == null || receiver == null) {
-            addError("Could not send payment", "One of the wallets no longer exists.");
+        Merchant merchant = merchantDao.findById(merchantId);
+        if (sender == null || merchant == null) {
+            addError("Could not send payment", "The wallet or the merchant no longer exists.");
             return null;
         }
 
         Transaction tx = new Transaction();
         tx.setSenderWallet(sender);
-        tx.setReceiverWallet(receiver);
+        tx.setReceiverMerchant(merchant);
         tx.setAmount(amount);
-        tx.setType(type);
         tx.setStatus("COMPLETED");
 
         try {
-            paymentService.transfer(tx);
+            paymentService.pay(tx);
         } catch (IllegalStateException | IllegalArgumentException ex) {
             addError("Could not send payment", ex.getMessage());
             return null;
@@ -85,8 +80,10 @@ public class TransactionBean {
         return walletDao.findAll();
     }
 
-    public List<String> getTypes() {
-        return TYPES;
+    public List<Merchant> getActiveMerchantsForDropdown() {
+        return merchantDao.findAll().stream()
+                .filter(m -> "ACTIVE".equals(m.getStatus()))
+                .collect(Collectors.toList());
     }
 
     private void addError(String summary, String detail) {
@@ -104,12 +101,12 @@ public class TransactionBean {
         this.senderWalletId = senderWalletId;
     }
 
-    public Long getReceiverWalletId() {
-        return receiverWalletId;
+    public Long getMerchantId() {
+        return merchantId;
     }
 
-    public void setReceiverWalletId(Long receiverWalletId) {
-        this.receiverWalletId = receiverWalletId;
+    public void setMerchantId(Long merchantId) {
+        this.merchantId = merchantId;
     }
 
     public BigDecimal getAmount() {
@@ -118,13 +115,5 @@ public class TransactionBean {
 
     public void setAmount(BigDecimal amount) {
         this.amount = amount;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
     }
 }

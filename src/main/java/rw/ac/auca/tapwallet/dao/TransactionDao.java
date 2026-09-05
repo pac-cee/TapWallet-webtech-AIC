@@ -54,9 +54,21 @@ public class TransactionDao {
     public List<rw.ac.auca.tapwallet.model.Transaction> findByWallet(Long walletId){
         Session ss = hibernateUtil.getSessionFactory().openSession();
         try {
-            return ss.createQuery("SELECT t FROM Transaction t WHERE t.senderWallet.id = :wid OR t.receiverWallet.id = :wid ORDER BY t.id DESC",
+            return ss.createQuery("SELECT t FROM Transaction t WHERE t.senderWallet.id = :wid ORDER BY t.id DESC",
                     rw.ac.auca.tapwallet.model.Transaction.class)
                     .setParameter("wid", walletId)
+                    .list();
+        } finally {
+            ss.close();
+        }
+    }
+
+    public List<rw.ac.auca.tapwallet.model.Transaction> findByMerchant(Long merchantId){
+        Session ss = hibernateUtil.getSessionFactory().openSession();
+        try {
+            return ss.createQuery("SELECT t FROM Transaction t WHERE t.receiverMerchant.id = :mid ORDER BY t.id DESC",
+                    rw.ac.auca.tapwallet.model.Transaction.class)
+                    .setParameter("mid", merchantId)
                     .list();
         } finally {
             ss.close();

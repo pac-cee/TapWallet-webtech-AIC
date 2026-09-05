@@ -17,7 +17,7 @@ public class WalletValidationTest {
     private static final Validator VALIDATOR = FACTORY.getValidator();
 
     private User anyOwner() {
-        return new User("Owner", "owner@example.com", "0788123456", "hash", "CUSTOMER", "ACTIVE");
+        return new User("Owner", "owner@example.com", "0788123456", "hash", "ACTIVE");
     }
 
     @Test

@@ -14,6 +14,7 @@
         <div class="nav">
             <h:link outcome="index" value="Home"/>
             <h:link outcome="wallet-list" value="Manage Wallets"/>
+            <h:link outcome="merchant-list" value="Manage Merchants"/>
             <h:link outcome="transaction-form" value="Send Payment"/>
         </div>
         <div class="table-container">
@@ -26,15 +27,11 @@
                     </h:column>
                     <h:column>
                         <f:facet name="header">To</f:facet>
-                        #{t.receiverWallet.owner.fullName}
+                        #{t.receiverMerchant.businessName}
                     </h:column>
                     <h:column>
                         <f:facet name="header">Amount</f:facet>
                         #{t.amount}
-                    </h:column>
-                    <h:column>
-                        <f:facet name="header">Type</f:facet>
-                        #{t.type}
                     </h:column>
                     <h:column>
                         <f:facet name="header">Action</f:facet>
@@ -42,7 +39,7 @@
                                        onclick="return confirm('Reverse this payment? Balances move back.');"/>
                     </h:column>
                 </h:dataTable>
-                <h:outputText value="No payments yet. Top up two wallets, then send one." rendered="#{empty transactionBean.allTransactions}" style="color:#6b756d"/>
+                <h:outputText value="No payments yet. Top up a wallet, register a merchant, then send one." rendered="#{empty transactionBean.allTransactions}" style="color:#6b756d"/>
             </h:form>
         </div>
     </f:view>

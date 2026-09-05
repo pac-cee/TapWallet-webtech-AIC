@@ -13,7 +13,7 @@ public class MerchantDaoTest {
 
     private User newOperator(String label) {
         User operator = new User(label, label.toLowerCase().replace(" ", "") + "-" + System.nanoTime() + "@example.com",
-                "0788123456", "hash", "MERCHANT", "ACTIVE");
+                "0788123456", "hash", "ACTIVE");
         userDao.save(operator);
         return operator;
     }

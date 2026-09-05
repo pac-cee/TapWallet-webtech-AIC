@@ -44,14 +44,6 @@
                     </h:inputSecret>
                     <h:message for="password" style="color : red"/>
 
-                    <h:outputLabel value="Role" for="role"/>
-                    <h:selectOneMenu id="role" value="#{userBean.role}">
-                        <f:selectItem itemValue="CUSTOMER" itemLabel="Customer"/>
-                        <f:selectItem itemValue="MERCHANT" itemLabel="Merchant"/>
-                        <f:selectItem itemValue="ADMIN" itemLabel="Admin"/>
-                    </h:selectOneMenu>
-                    <h:message for="role" style="color : red"/>
-
                     <h:outputLabel value="Status" for="status"/>
                     <h:selectOneMenu id="status" value="#{userBean.status}">
                         <f:selectItem itemValue="ACTIVE" itemLabel="Active"/>

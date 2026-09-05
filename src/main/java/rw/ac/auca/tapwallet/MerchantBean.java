@@ -4,6 +4,7 @@ import rw.ac.auca.tapwallet.dao.MerchantDao;
 import rw.ac.auca.tapwallet.dao.UserDao;
 import rw.ac.auca.tapwallet.model.Merchant;
 import rw.ac.auca.tapwallet.model.User;
+import rw.ac.auca.tapwallet.service.PaymentService;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
@@ -14,6 +15,7 @@ import java.util.List;
 public class MerchantBean {
     private MerchantDao merchantDao = new MerchantDao();
     private UserDao userDao = new UserDao();
+    private PaymentService paymentService = new PaymentService();
 
     private Long id;
     private String businessName;
@@ -83,6 +85,10 @@ public class MerchantBean {
     }
 
     public String delete(Long merchantId) {
+        if (merchantId != null && !paymentService.findByMerchant(merchantId).isEmpty()) {
+            addError("Could not delete merchant", "This merchant still has payment history. Reverse those payments first.");
+            return null;
+        }
         try {
             merchantDao.delete(merchantId);
         } catch (RuntimeException ex) {

@@ -1,8 +1,10 @@
 package rw.ac.auca.tapwallet.service;
 
 import org.junit.Test;
+import rw.ac.auca.tapwallet.dao.MerchantDao;
 import rw.ac.auca.tapwallet.dao.UserDao;
 import rw.ac.auca.tapwallet.dao.WalletDao;
+import rw.ac.auca.tapwallet.model.Merchant;
 import rw.ac.auca.tapwallet.model.TopUp;
 import rw.ac.auca.tapwallet.model.Transaction;
 import rw.ac.auca.tapwallet.model.User;
@@ -17,17 +19,28 @@ public class LedgerServiceTest {
 
     private final UserDao userDao = new UserDao();
     private final WalletDao walletDao = new WalletDao();
+    private final MerchantDao merchantDao = new MerchantDao();
     private final PaymentService paymentService = new PaymentService();
     private final TopUpService topUpService = new TopUpService();
     private final WithdrawalService withdrawalService = new WithdrawalService();
 
+    private User newUser(String label) {
+        User user = new User(label, label.toLowerCase().replace(" ", "") + "-" + System.nanoTime() + "@example.com",
+                "0788123456", "hash", "ACTIVE");
+        userDao.save(user);
+        return user;
+    }
+
     private Wallet newWallet(String label, String amount) {
-        User owner = new User(label, label.toLowerCase().replace(" ", "") + "-" + System.nanoTime() + "@example.com",
-                "0788123456", "hash", "CUSTOMER", "ACTIVE");
-        userDao.save(owner);
-        Wallet wallet = new Wallet(owner, new BigDecimal(amount), "RWF", "ACTIVE");
+        Wallet wallet = new Wallet(newUser(label), new BigDecimal(amount), "RWF", "ACTIVE");
         walletDao.save(wallet);
         return wallet;
+    }
+
+    private Merchant newMerchant(String label) {
+        Merchant merchant = new Merchant(label, "MCH-" + Math.abs(System.nanoTime() % 1000000), newUser(label + " Operator"), "ACTIVE");
+        merchantDao.save(merchant);
+        return merchant;
     }
 
     @Test
@@ -64,41 +77,56 @@ public class LedgerServiceTest {
     }
 
     @Test
-    public void transferMovesMoneyAtomically() {
+    public void paymentMovesMoneyToTheMerchantAtomically() {
         Wallet sender = newWallet("Sender Owner", "200.00");
-        Wallet receiver = newWallet("Receiver Owner", "50.00");
+        Merchant merchant = newMerchant("Sender's Shop");
 
-        paymentService.transfer(new Transaction(sender, receiver, new BigDecimal("70.00"), "PAYMENT", "COMPLETED"));
+        paymentService.pay(new Transaction(sender, merchant, new BigDecimal("70.00"), "COMPLETED"));
 
         assertEquals(0, new BigDecimal("130.00").compareTo(walletDao.findById(sender.getId()).getBalance()));
-        assertEquals(0, new BigDecimal("120.00").compareTo(walletDao.findById(receiver.getId()).getBalance()));
+        assertEquals(0, new BigDecimal("70.00").compareTo(merchantDao.findById(merchant.getId()).getBalance()));
     }
 
     @Test
-    public void transferBeyondBalanceLeavesBothBalancesUntouched() {
+    public void paymentBeyondBalanceLeavesBothBalancesUntouched() {
         Wallet sender = newWallet("Broke Sender", "20.00");
-        Wallet receiver = newWallet("Rich Receiver", "20.00");
+        Merchant merchant = newMerchant("Rich Shop");
         try {
-            paymentService.transfer(new Transaction(sender, receiver, new BigDecimal("500.00"), "PAYMENT", "COMPLETED"));
+            paymentService.pay(new Transaction(sender, merchant, new BigDecimal("500.00"), "COMPLETED"));
             fail("Expected an IllegalStateException");
         } catch (IllegalStateException ex) {
             assertNotNull(ex.getMessage());
         }
         assertEquals(0, new BigDecimal("20.00").compareTo(walletDao.findById(sender.getId()).getBalance()));
-        assertEquals(0, new BigDecimal("20.00").compareTo(walletDao.findById(receiver.getId()).getBalance()));
+        assertEquals(0, BigDecimal.ZERO.compareTo(merchantDao.findById(merchant.getId()).getBalance()));
     }
 
     @Test
-    public void reversingATransferMovesMoneyBack() {
+    public void aMerchantCannotPayItsOwnShop() {
+        Merchant merchant = newMerchant("Self Pay Shop");
+        Wallet operatorWallet = new Wallet(merchant.getOperator(), new BigDecimal("100.00"), "RWF", "ACTIVE");
+        walletDao.save(operatorWallet);
+
+        try {
+            paymentService.pay(new Transaction(operatorWallet, merchant, new BigDecimal("10.00"), "COMPLETED"));
+            fail("Expected an IllegalArgumentException");
+        } catch (IllegalArgumentException ex) {
+            assertNotNull(ex.getMessage());
+        }
+        assertEquals(0, new BigDecimal("100.00").compareTo(walletDao.findById(operatorWallet.getId()).getBalance()));
+    }
+
+    @Test
+    public void reversingAPaymentMovesMoneyBack() {
         Wallet sender = newWallet("Reverse Sender", "200.00");
-        Wallet receiver = newWallet("Reverse Receiver", "50.00");
-        Transaction tx = paymentService.transfer(
-                new Transaction(sender, receiver, new BigDecimal("60.00"), "PAYMENT", "COMPLETED"));
+        Merchant merchant = newMerchant("Reverse Shop");
+        Transaction tx = paymentService.pay(
+                new Transaction(sender, merchant, new BigDecimal("60.00"), "COMPLETED"));
 
         paymentService.reverse(tx.getId());
 
         assertEquals(0, new BigDecimal("200.00").compareTo(walletDao.findById(sender.getId()).getBalance()));
-        assertEquals(0, new BigDecimal("50.00").compareTo(walletDao.findById(receiver.getId()).getBalance()));
+        assertEquals(0, BigDecimal.ZERO.compareTo(merchantDao.findById(merchant.getId()).getBalance()));
         assertNull(paymentService.findById(tx.getId()));
     }
 }

@@ -17,28 +17,28 @@ public class UserValidationTest {
 
     @Test
     public void aFullyPopulatedUserHasNoViolations() {
-        User user = new User("Pacifique Bakundukize", "pacifique@example.com", "0788123456", "hash", "CUSTOMER", "ACTIVE");
+        User user = new User("Pacifique Bakundukize", "pacifique@example.com", "0788123456", "hash", "ACTIVE");
         Set<ConstraintViolation<User>> violations = VALIDATOR.validate(user);
         assertTrue(violations.isEmpty());
     }
 
     @Test
     public void aBlankFullNameIsRejected() {
-        User user = new User("", "pacifique@example.com", "0788123456", "hash", "CUSTOMER", "ACTIVE");
+        User user = new User("", "pacifique@example.com", "0788123456", "hash", "ACTIVE");
         Set<ConstraintViolation<User>> violations = VALIDATOR.validate(user);
         assertFalse(violations.isEmpty());
     }
 
     @Test
     public void anInvalidEmailIsRejected() {
-        User user = new User("Pacifique Bakundukize", "not-an-email", "0788123456", "hash", "CUSTOMER", "ACTIVE");
+        User user = new User("Pacifique Bakundukize", "not-an-email", "0788123456", "hash", "ACTIVE");
         Set<ConstraintViolation<User>> violations = VALIDATOR.validate(user);
         assertFalse(violations.isEmpty());
     }
 
     @Test
     public void aBlankPasswordHashIsRejected() {
-        User user = new User("Pacifique Bakundukize", "pacifique@example.com", "0788123456", "", "CUSTOMER", "ACTIVE");
+        User user = new User("Pacifique Bakundukize", "pacifique@example.com", "0788123456", "", "ACTIVE");
         Set<ConstraintViolation<User>> violations = VALIDATOR.validate(user);
         assertFalse(violations.isEmpty());
     }

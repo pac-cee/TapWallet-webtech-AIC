@@ -22,7 +22,6 @@ public class UserBean {
     private String email;
     private String phone;
     private String password;
-    private String role = "CUSTOMER";
     private String status = "ACTIVE";
 
     public String save() {
@@ -58,7 +57,6 @@ public class UserBean {
         user.setFullName(cleanName);
         user.setEmail(cleanEmail);
         user.setPhone(cleanPhone);
-        user.setRole(role);
         user.setStatus(status);
 
         if (password != null && !password.trim().isEmpty()) {
@@ -85,7 +83,6 @@ public class UserBean {
                 fullName = user.getFullName();
                 email = user.getEmail();
                 phone = user.getPhone();
-                role = user.getRole();
                 status = user.getStatus();
             }
         }
@@ -158,14 +155,6 @@ public class UserBean {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
     }
 
     public String getStatus() {

@@ -26,25 +26,18 @@
                     </h:selectOneMenu>
                     <h:message for="sender" style="color : red"/>
 
-                    <h:outputLabel value="To Wallet" for="receiver"/>
-                    <h:selectOneMenu id="receiver" value="#{transactionBean.receiverWalletId}" required="true" label="To Wallet">
-                        <f:selectItems value="#{transactionBean.allWalletsForDropdown}" var="w"
-                                       itemValue="#{w.id}" itemLabel="#{w.owner.fullName} - #{w.balance} #{w.currency}"/>
+                    <h:outputLabel value="To Merchant" for="merchant"/>
+                    <h:selectOneMenu id="merchant" value="#{transactionBean.merchantId}" required="true" label="To Merchant">
+                        <f:selectItems value="#{transactionBean.activeMerchantsForDropdown}" var="m"
+                                       itemValue="#{m.id}" itemLabel="#{m.businessName} (#{m.merchantCode})"/>
                     </h:selectOneMenu>
-                    <h:message for="receiver" style="color : red"/>
+                    <h:message for="merchant" style="color : red"/>
 
                     <h:outputLabel value="Amount" for="amount"/>
                     <h:inputText id="amount" value="#{transactionBean.amount}" required="true" label="Amount">
                         <f:validateDoubleRange minimum="0.01"/>
                     </h:inputText>
                     <h:message for="amount" style="color : red"/>
-
-                    <h:outputLabel value="Type" for="type"/>
-                    <h:selectOneMenu id="type" value="#{transactionBean.type}">
-                        <f:selectItem itemValue="PAYMENT" itemLabel="Payment"/>
-                        <f:selectItem itemValue="TRANSFER" itemLabel="Transfer"/>
-                    </h:selectOneMenu>
-                    <h:message for="type" style="color : red"/>
 
                     <h:commandButton value="Send" action="#{transactionBean.save()}"/>
                 </h:panelGrid>

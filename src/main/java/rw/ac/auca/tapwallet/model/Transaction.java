@@ -25,18 +25,15 @@ public class Transaction extends Audit {
     @JoinColumn(name = "sender_wallet_id", nullable = false)
     private Wallet senderWallet;
 
-    @NotNull(message = "Receiver wallet is required")
+    @NotNull(message = "Receiving merchant is required")
     @ManyToOne
-    @JoinColumn(name = "receiver_wallet_id", nullable = false)
-    private Wallet receiverWallet;
+    @JoinColumn(name = "receiver_merchant_id", nullable = false)
+    private Merchant receiverMerchant;
 
     @NotNull(message = "Amount is required")
     @DecimalMin(value = "0.01", message = "Amount must be at least 0.01")
     @Column(name = "amount", nullable = false)
     private BigDecimal amount;
-
-    @Column(name = "type", nullable = false)
-    private String type = "PAYMENT";
 
     @Column(name = "status", nullable = false)
     private String status = "COMPLETED";
@@ -44,11 +41,10 @@ public class Transaction extends Audit {
     public Transaction() {
     }
 
-    public Transaction(Wallet senderWallet, Wallet receiverWallet, BigDecimal amount, String type, String status) {
+    public Transaction(Wallet senderWallet, Merchant receiverMerchant, BigDecimal amount, String status) {
         this.senderWallet = senderWallet;
-        this.receiverWallet = receiverWallet;
+        this.receiverMerchant = receiverMerchant;
         this.amount = amount;
-        this.type = type;
         this.status = status;
     }
 
@@ -68,12 +64,12 @@ public class Transaction extends Audit {
         this.senderWallet = senderWallet;
     }
 
-    public Wallet getReceiverWallet() {
-        return receiverWallet;
+    public Merchant getReceiverMerchant() {
+        return receiverMerchant;
     }
 
-    public void setReceiverWallet(Wallet receiverWallet) {
-        this.receiverWallet = receiverWallet;
+    public void setReceiverMerchant(Merchant receiverMerchant) {
+        this.receiverMerchant = receiverMerchant;
     }
 
     public BigDecimal getAmount() {
@@ -82,14 +78,6 @@ public class Transaction extends Audit {
 
     public void setAmount(BigDecimal amount) {
         this.amount = amount;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
     }
 
     public String getStatus() {

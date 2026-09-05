@@ -38,21 +38,17 @@ public class User extends Audit {
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
 
-    @Column(name = "role", nullable = false)
-    private String role = "CUSTOMER";
-
     @Column(name = "status", nullable = false)
     private String status = "ACTIVE";
 
     public User() {
     }
 
-    public User(String fullName, String email, String phone, String passwordHash, String role, String status) {
+    public User(String fullName, String email, String phone, String passwordHash, String status) {
         this.fullName = fullName;
         this.email = email;
         this.phone = phone;
         this.passwordHash = passwordHash;
-        this.role = role;
         this.status = status;
     }
 
@@ -94,14 +90,6 @@ public class User extends Audit {
 
     public void setPasswordHash(String passwordHash) {
         this.passwordHash = passwordHash;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
     }
 
     public String getStatus() {

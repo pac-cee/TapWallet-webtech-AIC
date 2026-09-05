@@ -18,7 +18,7 @@ public class NfcCardDaoTest {
 
     private Wallet newWallet(String label) {
         User owner = new User(label, label.toLowerCase().replace(" ", "") + "-" + System.nanoTime() + "@example.com",
-                "0788123456", "hash", "CUSTOMER", "ACTIVE");
+                "0788123456", "hash", "ACTIVE");
         userDao.save(owner);
         Wallet wallet = new Wallet(owner, new BigDecimal("100.00"), "RWF", "ACTIVE");
         walletDao.save(wallet);
