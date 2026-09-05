@@ -13,8 +13,16 @@
         <h1>Top-Ups</h1>
         <div class="nav">
             <h:link outcome="index" value="Home"/>
-            <h:link outcome="wallet-list" value="Manage Wallets"/>
-            <h:link outcome="topup-form" value="New Top-Up"/>
+            <h:link outcome="user-list" value="Users"/>
+            <h:link outcome="wallet-list" value="Wallets"/>
+            <h:link outcome="merchant-list" value="Merchants"/>
+            <h:link outcome="card-list" value="Cards"/>
+            <h:link outcome="transaction-list" value="Payments"/>
+            <h:link outcome="topup-list" value="Top-Ups"/>
+            <h:link outcome="withdrawal-list" value="Withdrawals"/>
+        </div>
+        <div class="page-actions">
+            <h:link outcome="topup-form" value="+ New Top-Up" styleClass="btn-add"/>
         </div>
         <div class="table-container">
             <h:form>
@@ -38,7 +46,7 @@
                                        onclick="return confirm('Undo this top-up? The amount is taken back.');"/>
                     </h:column>
                 </h:dataTable>
-                <h:outputText value="No top-ups yet." rendered="#{empty topUpBean.allTopUps}" style="color:#6b756d"/>
+                <h:outputText value="No top-ups yet." rendered="#{empty topUpBean.allTopUps}" styleClass="empty-state"/>
             </h:form>
         </div>
     </f:view>

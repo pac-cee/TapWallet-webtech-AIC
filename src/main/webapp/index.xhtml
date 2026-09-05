@@ -12,20 +12,53 @@
     <f:view>
         <h1>TapWallet - NFC Digital Payment &amp; Wallet System</h1>
         <div class="nav">
+            <h:link outcome="index" value="Home"/>
             <h:link outcome="user-list" value="Users"/>
             <h:link outcome="wallet-list" value="Wallets"/>
-            <h:link outcome="card-list" value="NFC Cards"/>
             <h:link outcome="merchant-list" value="Merchants"/>
+            <h:link outcome="card-list" value="Cards"/>
             <h:link outcome="transaction-list" value="Payments"/>
             <h:link outcome="topup-list" value="Top-Ups"/>
             <h:link outcome="withdrawal-list" value="Withdrawals"/>
         </div>
-        <div class="table-container">
-            <p style="margin-top:0">Tap a card to pay a merchant: top up a wallet, link an NFC token,
-                then send a payment between two wallets. Every movement is validated
-                and written to one shared ledger.</p>
-            <p>Start with <h:link outcome="user-list" value="Users"/>, then
-                <h:link outcome="wallet-list" value="Wallets"/> — one wallet per user.</p>
+        <p class="hint">A customer holds a wallet, tops it up, and pays a registered merchant. Start with Users, then Wallets.</p>
+
+        <div class="home-grid">
+            <div class="home-card">
+                <h3>1. Users</h3>
+                <p>Register a customer or a shop operator.</p>
+                <h:link outcome="user-list" value="Open Users &#8594;"/>
+            </div>
+            <div class="home-card">
+                <h3>2. Wallets</h3>
+                <p>Every payer needs one wallet with a balance.</p>
+                <h:link outcome="wallet-list" value="Open Wallets &#8594;"/>
+            </div>
+            <div class="home-card">
+                <h3>3. Merchants</h3>
+                <p>Register the shop that will receive payments.</p>
+                <h:link outcome="merchant-list" value="Open Merchants &#8594;"/>
+            </div>
+            <div class="home-card">
+                <h3>4. Top-Ups</h3>
+                <p>Add funds to a wallet before paying.</p>
+                <h:link outcome="topup-list" value="Open Top-Ups &#8594;"/>
+            </div>
+            <div class="home-card">
+                <h3>5. Payments</h3>
+                <p>Send money from a wallet to a merchant, or reverse one.</p>
+                <h:link outcome="transaction-list" value="Open Payments &#8594;"/>
+            </div>
+            <div class="home-card">
+                <h3>NFC Cards</h3>
+                <p>Link a tap-to-pay token to a wallet.</p>
+                <h:link outcome="card-list" value="Open Cards &#8594;"/>
+            </div>
+            <div class="home-card">
+                <h3>Withdrawals</h3>
+                <p>Take funds back out of a wallet.</p>
+                <h:link outcome="withdrawal-list" value="Open Withdrawals &#8594;"/>
+            </div>
         </div>
     </f:view>
 </h:body>

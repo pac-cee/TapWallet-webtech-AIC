@@ -10,23 +10,55 @@ h1 {
     background-color: #123456;
     color: #ffffff;
     padding: 16px 24px;
-    margin: 0 0 20px 0;
+    margin: 0 0 4px 0;
 }
 
 .nav {
-    padding: 0 24px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 18px;
+    padding: 10px 24px;
     margin-bottom: 20px;
+    background-color: #ffffff;
+    border-bottom: 1px solid #dbe1e6;
 }
 
 .nav a {
-    margin-right: 16px;
     color: #123456;
     font-weight: bold;
     text-decoration: none;
+    font-size: 14px;
 }
 
 .nav a:hover {
     text-decoration: underline;
+}
+
+.page-actions {
+    margin: 0 24px 14px 24px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.btn-add {
+    display: inline-block;
+    background-color: #0d6e5c;
+    color: #ffffff !important;
+    padding: 8px 16px;
+    border-radius: 6px;
+    text-decoration: none !important;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.btn-add:hover {
+    background-color: #0a5346;
+}
+
+.hint {
+    margin: 0 24px 16px 24px;
+    color: #6b756d;
 }
 
 .form-container, .table-container {
@@ -35,6 +67,12 @@ h1 {
     padding: 20px;
     border-radius: 6px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.form-container h2, .table-container h2 {
+    margin: 0 0 4px 0;
+    font-size: 15px;
+    color: #6b756d;
 }
 
 table {
@@ -54,6 +92,10 @@ table td {
     border-bottom: 1px solid #e0e0e0;
 }
 
+table tr:hover td {
+    background-color: #f4f6f8;
+}
+
 .btn-link {
     color: #123456;
     font-weight: bold;
@@ -64,4 +106,44 @@ table td {
     color: #b00020;
     font-weight: bold;
     text-decoration: none;
+}
+
+.empty-state {
+    color: #6b756d;
+    padding: 12px 0;
+}
+
+.home-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin: 0 24px 24px 24px;
+}
+
+.home-card {
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 18px 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.home-card h3 {
+    margin: 0 0 8px 0;
+    color: #123456;
+}
+
+.home-card p {
+    margin: 0 0 12px 0;
+    color: #52606d;
+    font-size: 14px;
+}
+
+.home-card a {
+    color: #0d6e5c;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.home-card a:hover {
+    text-decoration: underline;
 }

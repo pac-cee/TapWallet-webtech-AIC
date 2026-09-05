@@ -13,9 +13,16 @@
         <h1>Users</h1>
         <div class="nav">
             <h:link outcome="index" value="Home"/>
-            <h:link outcome="wallet-list" value="Manage Wallets"/>
-            <h:link outcome="merchant-list" value="Manage Merchants"/>
-            <h:link outcome="user-form" value="Add New User"/>
+            <h:link outcome="user-list" value="Users"/>
+            <h:link outcome="wallet-list" value="Wallets"/>
+            <h:link outcome="merchant-list" value="Merchants"/>
+            <h:link outcome="card-list" value="Cards"/>
+            <h:link outcome="transaction-list" value="Payments"/>
+            <h:link outcome="topup-list" value="Top-Ups"/>
+            <h:link outcome="withdrawal-list" value="Withdrawals"/>
+        </div>
+        <div class="page-actions">
+            <h:link outcome="user-form" value="+ Add New User" styleClass="btn-add"/>
         </div>
         <div class="table-container">
             <h:form>
@@ -47,6 +54,7 @@
                                        onclick="return confirm('Delete this user?');"/>
                     </h:column>
                 </h:dataTable>
+                <h:outputText value="No users yet. Register the first one to get a wallet started." rendered="#{empty userBean.allUsers}" styleClass="empty-state"/>
             </h:form>
         </div>
     </f:view>
