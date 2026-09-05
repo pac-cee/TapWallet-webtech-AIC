@@ -5,6 +5,7 @@ Web Technology Assignment 3 using JSF 2.3 and Hibernate 5, backed by an
 **H2 in-memory database** (no external DB server needed).
 
 **Author:** Pacifique Bakundukize (26798)
+**Repository:** https://github.com/pac-cee/TapWallet-webtech-AIC
 
 ## Tech stack
 
@@ -52,11 +53,11 @@ assignment strictly requires:
 
 | Entity | Fields | Notes |
 |---|---|---|
-| **User** | full name, email, phone, hashed password, role, status | Email unique; phone validated against MTN/Airtel format |
+| **User** | full name, email, phone, hashed password, status | Email unique; phone validated against MTN/Airtel format |
 | **Wallet** | owner, balance, currency, status | One wallet per user (enforced) |
-| **Merchant** | business name, merchant code, operator, status | One shop per operator (enforced); code unique |
+| **Merchant** | business name, merchant code, operator, status, balance (revenue) | One shop per operator (enforced); code unique; balance is system-managed only |
 | **NfcCard** | token, wallet, status | One card per wallet (enforced); token unique |
-| **Transaction** (payment) | sender wallet, receiver wallet, amount, type, status | Atomic debit+credit+ledger write; reversible |
+| **Transaction** (payment) | sender wallet, receiver **merchant**, amount, status | Wallet → Merchant only; atomic debit+credit+ledger write; reversible; a merchant can't pay its own shop |
 | **TopUp** | wallet, amount, method | Atomic credit+ledger write; reversible |
 | **Withdrawal** | wallet, amount, method | Atomic debit+ledger write; reversible |
 
@@ -79,26 +80,25 @@ stored or redisplayed in plain text), parameterized HQL everywhere (no
 string-built queries), server-side validation as the source of truth,
 and friendly `FacesMessage`s instead of leaked stack traces on failure.
 
-**Tests**: 48 JUnit tests across DAOs, services, beans, and validation —
+**Tests**: 49 JUnit tests across DAOs, services, beans, and validation —
 `mvn test` runs all of them against the in-memory database.
+
+**Demo data**: `DemoDataSeeder` (a `ServletContextListener`) seeds 2
+customers with starting balances and 2 active merchants the first time
+the app starts against an empty database, so there's something to pay
+immediately. Every seeded account's password is `Demo1234`.
+
+**Navigation**: every page shares the same nav bar
+(Home/Users/Wallets/Merchants/Cards/Payments/Top-Ups/Withdrawals), and
+each list page has one clearly separated "+ Add" action button.
 
 ## Known limitations (flagged, not yet fixed)
 
-A few things work today but aren't realistic yet, and are queued for a
-follow-up pass:
+One thing still works but isn't fully realistic yet:
 
-- `User.role` (`CUSTOMER`/`MERCHANT`/`ADMIN`) exists but isn't used for
-  anything — `Merchant` is already its own table with its own
-  `operator` link, so the role flag is redundant.
 - A `Wallet` is created independently of its owning `User` (a separate
   "Add New Wallet" form, picking any user from a dropdown) instead of
   automatically when a user registers.
-- `Transaction` connects wallet → wallet with a `PAYMENT`/`TRANSFER`
-  type, so nothing currently stops one customer sending money straight
-  to another customer's wallet — real payments should only ever go
-  from a customer's wallet to a registered `Merchant`.
-- There's no seed/demo data, so a fresh deploy starts with an empty
-  Users/Wallets/Merchants list.
 
 ## What's documented but not implemented
 

@@ -327,10 +327,11 @@
             <tr><td class="num">BR-03</td><td>Every wallet must belong to exactly one existing user; balance can never go negative.</td><td><span class="pill good">Implemented</span></td></tr>
             <tr><td class="num">BR-04</td><td>A customer can top up or withdraw funds against their wallet.</td><td><span class="pill good">Implemented</span></td></tr>
             <tr><td class="num">BR-05</td><td>A wallet can be linked to an NFC card token for point-of-sale payment.</td><td><span class="pill good">Implemented</span></td></tr>
-            <tr><td class="num">BR-06</td><td>A merchant can register a business profile and receive tap payments.<br/><span style="color:var(--muted);font-size:12px">Registration works; payments still settle wallet-to-wallet, not onto the merchant record &mdash; see Section 09.</span></td><td><span class="pill warm">Partial</span></td></tr>
+            <tr><td class="num">BR-06</td><td>A merchant can register a business profile and receive tap payments.</td><td><span class="pill good">Implemented</span></td></tr>
             <tr><td class="num">BR-07</td><td>Every payment produces a single transaction record both parties can view.</td><td><span class="pill good">Implemented</span></td></tr>
             <tr><td class="num">BR-08</td><td>All user input is validated server-side before it reaches the database.</td><td><span class="pill good">Implemented</span></td></tr>
             <tr><td class="num">BR-09</td><td>Passwords are never stored or displayed in plain text.</td><td><span class="pill good">Implemented</span></td></tr>
+            <tr><td class="num">BR-10</td><td>A payment can only go from a customer's wallet to a registered merchant &mdash; never wallet-to-wallet, and never to a merchant a customer operates themself.</td><td><span class="pill good">Implemented</span></td></tr>
           </tbody>
         </table>
       </div>
@@ -341,9 +342,9 @@
       <div class="sec-rule"></div>
       <div class="qualities">
         <div class="quality"><h3><span class="swatch"></span>Security</h3><p>Salted SHA-256 password hashing, HQL with bound parameters (no string-built queries), and server-side validation as the source of truth &mdash; the client can be bypassed, the database cannot.</p></div>
-        <div class="quality"><h3><span class="swatch"></span>Usability</h3><p>One reused form per entity for create and edit, inline field-level error messages, and plain navigation between the two record lists and the home page.</p></div>
+        <div class="quality"><h3><span class="swatch"></span>Usability</h3><p>One reused form per entity for create and edit, inline field-level error messages, an identical navigation bar on every page, and a numbered-step home dashboard that walks a first-time user through the intended order (Users &rarr; Wallets &rarr; Merchants &rarr; Top-Ups &rarr; Payments).</p></div>
         <div class="quality"><h3><span class="swatch"></span>Maintainability</h3><p>A strict layering &mdash; entity, DAO, managed bean, view &mdash; with one class per responsibility, so a change to persistence never touches a view and vice versa.</p></div>
-        <div class="quality"><h3><span class="swatch"></span>Reliability</h3><p>Every money movement runs inside one Hibernate transaction (open &rarr; act &rarr; commit &rarr; close) in a dedicated service &mdash; <code>PaymentService</code>, <code>TopUpService</code>, <code>WithdrawalService</code> &mdash; so a balance and its ledger row are never left out of sync. 48 automated JUnit tests cover the DAO, service, bean, and validation layers.</p></div>
+        <div class="quality"><h3><span class="swatch"></span>Reliability</h3><p>Every money movement runs inside one Hibernate transaction (open &rarr; act &rarr; commit &rarr; close) in a dedicated service &mdash; <code>PaymentService</code>, <code>TopUpService</code>, <code>WithdrawalService</code> &mdash; so a balance and its ledger row are never left out of sync. 49 automated JUnit tests cover the DAO, service, bean, and validation layers.</p></div>
         <div class="quality"><h3><span class="swatch"></span>Performance</h3><p>Primary-key lookups and an in-memory H2 database keep the demo instant; this is a teaching sandbox, not tuned for production load.</p></div>
         <div class="quality"><h3><span class="swatch"></span>Scalability</h3><p>Swapping H2 for a networked RDBMS is a one-line change to <code>hibernate.cfg.xml</code>; every entity already follows the same entity/DAO/service/bean pattern, so adding one more doesn't disturb the others.</p></div>
       </div>
@@ -367,7 +368,6 @@ classDiagram
       +String email
       +String phone
       +String passwordHash
-      +String role
       +String status
     }
     class Wallet {
@@ -385,11 +385,12 @@ classDiagram
       +Long id
       +String businessName
       +String merchantCode
+      +BigDecimal balance
+      +String status
     }
     class Transaction {
       +Long id
       +BigDecimal amount
-      +String type
       +String status
     }
     class TopUp {
@@ -414,8 +415,8 @@ classDiagram
     User "1" --> "1" Wallet : owns
     Wallet "1" --> "0..1" NfcCard : linked to
     User "1" --> "0..1" Merchant : operates
-    Wallet "1" --> "*" Transaction : sender in
-    Wallet "1" --> "*" Transaction : receiver in
+    Wallet "1" --> "*" Transaction : pays from
+    Merchant "1" --> "*" Transaction : receives
     Wallet "1" --> "*" TopUp : records
     Wallet "1" --> "*" Withdrawal : records
     Transaction "1" --> "0..1" AuditLog : traced by
@@ -430,13 +431,10 @@ classDiagram
     <section id="limitations">
       <div class="sec-head"><span class="idx-num mono">09</span><h2>Known Limitations</h2></div>
       <div class="sec-rule"></div>
-      <p>Everything above runs and is tested, but a few corners aren't realistic yet. These are understood, deliberately flagged, and queued for a follow-up pass rather than silently left in:</p>
+      <p>Everything above runs and is tested. Three earlier gaps &mdash; an unused role flag on <code>User</code>, payments that could go wallet-to-wallet instead of only to a merchant, and no data to test against on a fresh deploy &mdash; have since been closed. One remains, understood and queued rather than silently left in:</p>
       <div class="card">
         <ul>
-          <li><strong>Unused role flag.</strong> <code>User.role</code> (CUSTOMER/MERCHANT/ADMIN) exists but drives nothing &mdash; <code>Merchant</code> is already its own table with its own <code>operator</code> link, which makes the role redundant.</li>
           <li><strong>Wallet creation is a separate step.</strong> A wallet is opened through its own form, picking any existing user from a dropdown, instead of automatically alongside registration &mdash; so a user can exist without ever getting a wallet.</li>
-          <li><strong>Payments aren't merchant-restricted.</strong> A <code>Transaction</code> connects wallet &rarr; wallet with a <code>PAYMENT</code>/<code>TRANSFER</code> type, so nothing stops one customer paying another customer directly. Real payments should only ever land on a registered <code>Merchant</code>.</li>
-          <li><strong>No seed data.</strong> A fresh deploy starts with empty Users/Wallets/Merchants tables, so there's nothing to pay until you register accounts by hand first.</li>
         </ul>
       </div>
     </section>
@@ -444,10 +442,9 @@ classDiagram
     <section id="links">
       <div class="sec-head"><span class="idx-num mono">10</span><h2>Repository &amp; Video</h2></div>
       <div class="sec-rule"></div>
-      <p>Both are required in the final submission and are left as placeholders here &mdash; fill them in before zipping.</p>
-      <div class="callout">
-        <span class="tag">Todo</span>
-        <p>GitHub repository (public): <em>&lt;paste the repo URL here after pushing&gt;</em></p>
+      <p>Both are required in the final submission.</p>
+      <div class="card" style="margin-bottom:14px">
+        <p style="margin:0;max-width:none">GitHub repository (public): <a href="https://github.com/pac-cee/TapWallet-webtech-AIC">github.com/pac-cee/TapWallet-webtech-AIC</a></p>
       </div>
       <div class="callout">
         <span class="tag">Todo</span>
