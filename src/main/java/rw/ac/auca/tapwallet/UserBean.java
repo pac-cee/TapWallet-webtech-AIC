@@ -1,6 +1,5 @@
 package rw.ac.auca.tapwallet;
 
-import rw.ac.auca.tapwallet.dao.MerchantDao;
 import rw.ac.auca.tapwallet.dao.UserDao;
 import rw.ac.auca.tapwallet.dao.WalletDao;
 import rw.ac.auca.tapwallet.model.User;
@@ -15,7 +14,6 @@ import java.util.List;
 public class UserBean {
     private UserDao userDao = new UserDao();
     private WalletDao walletDao = new WalletDao();
-    private MerchantDao merchantDao = new MerchantDao();
 
     private Long id;
     private String fullName;
@@ -91,10 +89,6 @@ public class UserBean {
     public String delete(Long userId) {
         if (walletDao.findByOwner(userId) != null) {
             addError("Could not delete user", "This user still owns a wallet. Delete the wallet first.");
-            return null;
-        }
-        if (merchantDao.findByOperator(userId) != null) {
-            addError("Could not delete user", "This user still operates a shop. Delete the merchant first.");
             return null;
         }
         try {

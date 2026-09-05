@@ -112,38 +112,3 @@ table tr:hover td {
     color: #6b756d;
     padding: 12px 0;
 }
-
-.home-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 16px;
-    margin: 0 24px 24px 24px;
-}
-
-.home-card {
-    background-color: #ffffff;
-    border-radius: 8px;
-    padding: 18px 20px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
-}
-
-.home-card h3 {
-    margin: 0 0 8px 0;
-    color: #123456;
-}
-
-.home-card p {
-    margin: 0 0 12px 0;
-    color: #52606d;
-    font-size: 14px;
-}
-
-.home-card a {
-    color: #0d6e5c;
-    font-weight: bold;
-    text-decoration: none;
-}
-
-.home-card a:hover {
-    text-decoration: underline;
-}

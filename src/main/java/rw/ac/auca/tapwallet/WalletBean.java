@@ -1,11 +1,7 @@
 package rw.ac.auca.tapwallet;
 
-import rw.ac.auca.tapwallet.dao.NfcCardDao;
 import rw.ac.auca.tapwallet.dao.UserDao;
 import rw.ac.auca.tapwallet.dao.WalletDao;
-import rw.ac.auca.tapwallet.service.PaymentService;
-import rw.ac.auca.tapwallet.service.TopUpService;
-import rw.ac.auca.tapwallet.service.WithdrawalService;
 import rw.ac.auca.tapwallet.model.User;
 import rw.ac.auca.tapwallet.model.Wallet;
 
@@ -20,10 +16,6 @@ import java.util.List;
 public class WalletBean {
     private WalletDao walletDao = new WalletDao();
     private UserDao userDao = new UserDao();
-    private NfcCardDao cardDao = new NfcCardDao();
-    private PaymentService paymentService = new PaymentService();
-    private TopUpService topUpService = new TopUpService();
-    private WithdrawalService withdrawalService = new WithdrawalService();
 
     private Long id;
     private Long ownerId;
@@ -97,22 +89,10 @@ public class WalletBean {
     }
 
     public String delete(Long walletId) {
-        if (walletId != null) {
-            if (cardDao.findByWallet(walletId) != null) {
-                addError("Could not delete wallet", "This wallet still has an NFC card. Delete the card first.");
-                return null;
-            }
-            if (!paymentService.findByWallet(walletId).isEmpty()
-                    || !topUpService.findByWallet(walletId).isEmpty()
-                    || !withdrawalService.findByWallet(walletId).isEmpty()) {
-                addError("Could not delete wallet", "This wallet still has ledger entries. Reverse them first.");
-                return null;
-            }
-        }
         try {
             walletDao.delete(walletId);
         } catch (RuntimeException ex) {
-            addError("Could not delete wallet", "This wallet still has cards or ledger entries.");
+            addError("Could not delete wallet", "Please try again.");
             return null;
         }
         return "wallet-list?faces-redirect=true";
