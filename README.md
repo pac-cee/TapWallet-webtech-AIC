@@ -9,6 +9,7 @@ CRUD), this project implements **User** and **Wallet** — nothing more.
 
 **Author:** Pacifique Bakundukize (26798)
 **Repository:** https://github.com/pac-cee/TapWallet-webtech-AIC
+**Video walkthrough:** https://drive.google.com/file/d/1lZD1U0aY5mWQ_xdpl7Zg-5t4imuNkclN/view?usp=sharing
 
 ## Tech stack
 

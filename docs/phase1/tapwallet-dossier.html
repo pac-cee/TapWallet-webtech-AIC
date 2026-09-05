@@ -1,7 +1,12 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
 <title>TapWallet Dossier</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,500&family=IBM+Plex+Mono:wght@400;500;600&display=swap" />
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
 <style>
   :root{
     --paper:#f3f2ec;
@@ -64,6 +69,7 @@
     font-family:"Source Serif 4", Georgia, "Times New Roman", serif;
     font-size:17px;
     line-height:1.65;
+    margin:0;
   }
   h1,h2,h3,.eyebrow,.label,nav,.stat-num,button{
     font-family:"Archivo", "Helvetica Neue", Arial, sans-serif;
@@ -209,7 +215,8 @@
   }
   .footer-box .mono{ font-size:12.5px; }
 </style>
-
+</head>
+<body>
 <div class="shell">
   <nav class="rail" aria-label="Section index">
     <p class="rail-title">Contents</p>
@@ -234,7 +241,7 @@
         <div><dt>Author</dt><dd>Pacifique Bakundukize</dd></div>
         <div><dt>Student ID</dt><dd class="mono">26798</dd></div>
         <div><dt>Course</dt><dd>Web Technology</dd></div>
-        <div><dt>Submission</dt><dd class="mono">26798_Pacifique_Bakundukize_assignment_3.zip</dd></div>
+        <div><dt>Submission</dt><dd class="mono">26798_Pacifique_Bakundukize_assigment_3.zip</dd></div>
       </dl>
     </div>
 
@@ -442,13 +449,10 @@ classDiagram
     <section id="links">
       <div class="sec-head"><span class="idx-num mono">10</span><h2>Repository &amp; Video</h2></div>
       <div class="sec-rule"></div>
-      <p>Both are required in the final submission.</p>
+      <p>Both required links, as submitted:</p>
       <div class="card" style="margin-bottom:14px">
-        <p style="margin:0;max-width:none">GitHub repository (public): <a href="https://github.com/pac-cee/TapWallet-webtech-AIC">github.com/pac-cee/TapWallet-webtech-AIC</a></p>
-      </div>
-      <div class="callout">
-        <span class="tag">Todo</span>
-        <p>Video walkthrough (Google Vid, screen + camera, 5&ndash;10 min): <em>&lt;paste the share link here&gt;</em></p>
+        <p style="margin:0 0 10px;max-width:none">GitHub repository (public): <a href="https://github.com/pac-cee/TapWallet-webtech-AIC">github.com/pac-cee/TapWallet-webtech-AIC</a></p>
+        <p style="margin:0;max-width:none">Video walkthrough (screen + camera, proposal and workflow): <a href="https://drive.google.com/file/d/1lZD1U0aY5mWQ_xdpl7Zg-5t4imuNkclN/view?usp=sharing">drive.google.com/file/d/1lZD1U0aY5mWQ_xdpl7Zg-5t4imuNkclN</a></p>
       </div>
     </section>
   </main>
@@ -456,7 +460,10 @@ classDiagram
   <footer>
     <div class="footer-box">
       <span>TapWallet &mdash; Web Technology, Assignment 3, Phase 1</span>
-      <span class="mono">26798_Pacifique_Bakundukize_assignment_3.zip</span>
+      <span class="mono">26798_Pacifique_Bakundukize_assigment_3.zip</span>
     </div>
   </footer>
 </div>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+</body>
+</html>
