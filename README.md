@@ -1,93 +1,105 @@
-# TapWallet — NFC Digital Payment & Wallet System
+# TapWallet — Digital Wallet & Merchant Payments
 
-A web-based digital wallet system, implemented for Web Technology
-Assignment 3 using JSF 2.3 and Hibernate 5, backed by an **H2
-in-memory database** (no external DB server needed).
-
-Per the assignment's requirement (choose 2 entities, implement full
-CRUD), this project implements **User** and **Wallet** — nothing more.
+A web-based digital wallet built for Web Technology Assignment 3, using
+**JSF 2.3 + Hibernate 5** on an **H2 in-memory database**, organised with a
+**Domain-Driven Design** layered architecture and role-based access control.
 
 **Author:** Pacifique Bakundukize (26798)
 **Repository:** https://github.com/pac-cee/TapWallet-webtech-AIC
 **Video walkthrough:** https://drive.google.com/file/d/1lZD1U0aY5mWQ_xdpl7Zg-5t4imuNkclN/view?usp=sharing
 
-## Tech stack
+## Run it
 
-- Java 8 (source/target), Maven (`war` packaging)
-- JSF 2.3.9 (org.glassfish) + Weld (CDI, via `weld-servlet-shaded`)
-- Hibernate ORM 5.6.15.Final
-- H2 2.2.224, in-memory (`jdbc:h2:mem:tapwallet`)
-- Hibernate Validator 6.2.5.Final (JSR-303 Bean Validation)
-- JUnit 4.13.2
+```bash
+mvn clean package
+cp target/TapWallet-1.0-SNAPSHOT.war <tomcat9>/webapps/
+<tomcat9>/bin/startup.sh          # JAVA_HOME must point at a JDK
+```
 
-## Running the tests
+Then open <http://localhost:8080/TapWallet-1.0-SNAPSHOT/> and sign in.
+**Tomcat 9** specifically — Tomcat 10+ moved to the `jakarta.*` namespace,
+which this project does not use. The database is rebuilt in memory on every
+start and seeded with the accounts below.
+
+### Demo accounts
+
+| Role | Email | Password |
+|---|---|---|
+| Administrator | admin@tapwallet.rw | `Admin@123` |
+| Customer | alice@tapwallet.rw | `Pass@123` |
+| Customer | eric@tapwallet.rw | `Pass@123` |
+| Merchant | cafe@tapwallet.rw | `Pass@123` |
+| Merchant | shop@tapwallet.rw | `Pass@123` |
+
+## What each role can do
+
+| Role | Can | Cannot |
+|---|---|---|
+| **Administrator** | Full CRUD on users and merchants, see every payment, reverse payments, freeze accounts | Reach customer or merchant screens |
+| **Customer** | See and top up their own wallet, pay any active merchant, read their own payment history | See another customer's wallet or payments |
+| **Merchant** | See their own shop, its revenue, and payments received with payer names | See another shop's takings |
+
+Access is enforced **twice**: `SecurityFilter` rejects the request by URL
+prefix before a page renders, and every query is keyed on the user id held in
+the session rather than on an id from the browser. Hiding a menu link is not
+treated as security.
+
+## Architecture (DDD, four layers)
+
+```
+domain/          aggregates, value objects, repository interfaces, domain service
+  model/user     User (aggregate root), Role, EmailAddress, PhoneNumber
+  model/wallet   Wallet — credit()/debit() own the balance invariants
+  model/merchant Merchant, MerchantCode
+  model/payment  Payment, PaymentStatus
+  model/shared   Money, Currency, AccountStatus, AuditableEntity
+  repository/    UserRepository, WalletRepository, MerchantRepository, PaymentRepository
+  service/       PaymentDomainService — the rule that spans Wallet and Merchant
+  exception/     DomainException, InsufficientFunds, InactiveAccount, SelfPayment
+
+application/     one class per actor's use cases, each = one Unit of Work
+infrastructure/  Hibernate repositories, SessionFactoryProvider, UnitOfWork,
+                 PasswordHasher strategy, ServiceRegistry, DataSeeder
+presentation/    JSF beans, SecurityFilter, PhoneValidator, Facelets template
+```
+
+Dependencies point inwards only — the domain knows nothing about Hibernate or
+JSF, which is why its rules are unit-testable without a server.
+
+### Design patterns
+
+Repository · Aggregate Root · Value Object · Domain Service · Application
+Service · Unit of Work · Singleton (`SessionFactoryProvider`) · Factory Method
+(`User.register()`, `Wallet.openFor()`, …) · Factory/Composition Root
+(`ServiceRegistry`) · Strategy (`PasswordHasher`) · MVC · Composite View
+(Facelets template) · Front Controller (`SecurityFilter`).
+
+## Tests
 
 ```bash
 mvn test
 ```
 
-34 JUnit tests cover the DAO, bean, and validation layers, running
-directly against the H2 in-memory database — no servlet container
-needed.
+**56 tests.** Domain rules run as plain objects (no database); application
+services run against a real H2 database, including rollback behaviour and the
+cross-role data-isolation rules.
 
-## Building the WAR
+## Assignment requirements
 
-```bash
-mvn clean package
-```
+- **Full CRUD on two entities** — Users and Merchants, both administered end to end.
+- **Three validation types** — standard JSF validators (`f:validateLength`,
+  `f:validateDoubleRange`, `f:validateRegex`), a custom validator
+  (`PhoneValidator`), and Bean Validation (JSR-303 annotations on entities and
+  value objects). The domain constructors validate a third time, so an invalid
+  object cannot exist even if a screen forgets.
+- **Three CSS inclusion styles** — external (`resources/css/styles.css`),
+  internal (`<style>` block in `customer/wallet.xhtml`), and inline `style=`
+  attributes on messages and figures.
 
-This produces `target/TapWallet-1.0-SNAPSHOT.war`.
+## Documentation
 
-## Deploying
-
-Deploy the WAR to any Servlet 4.0 container — **Tomcat 9** specifically
-(not 10+, which moved to the `jakarta.*` namespace this project doesn't use):
-
-1. Copy `target/TapWallet-1.0-SNAPSHOT.war` into `<tomcat>/webapps/`.
-2. Start Tomcat (`bin/startup.sh`, with `JAVA_HOME` pointed at a JDK).
-3. Open `http://localhost:8080/TapWallet-1.0-SNAPSHOT/`.
-
-The H2 database is created fresh, in memory, each time the app starts —
-nothing to install or configure, but all data is lost on restart.
-
-## What's implemented
-
-| Entity | Fields | Notes |
-|---|---|---|
-| **User** | full name, email, phone, hashed password, status | Email unique; phone validated against MTN/Airtel format |
-| **Wallet** | owner, balance, currency, status | One wallet per user (enforced) |
-
-Full CRUD (Create/Read/Update/Delete) on both, via `user-list`/`user-form`
-and `wallet-list`/`wallet-form`.
-
-**Validation** (all 3 required types): standard JSF validators
-(`f:validateLength`, `f:validateDoubleRange`), a custom validator
-(`PhoneValidator`, `@FacesValidator`), and Bean Validation (JSR-303
-annotations on both entities).
-
-**CSS** (all 3 required inclusion styles): external stylesheet
-(`resources/css/styles.css`), an internal `<style>` block
-(`wallet-list.xhtml`), and inline `style=` attributes throughout.
-
-**Security**: salted SHA-256 password hashing (passwords are never
-stored or redisplayed in plain text), parameterized HQL everywhere (no
-string-built queries), server-side validation as the source of truth,
-and friendly `FacesMessage`s instead of leaked stack traces on failure.
-
-**Tests**: 34 JUnit tests across DAOs, beans, and validation —
-`mvn test` runs all of them against the in-memory database.
-
-## What's documented but not implemented
-
-The wider TapWallet vision (merchants, NFC cards, payments, top-ups,
-withdrawals) is described in the Phase-1 documentation as the intended
-full system, but this repository deliberately implements only the
-CRUD slice the assignment requires — User and Wallet.
-
-## Phase-1 documentation
-
-The Assignment-3 Phase-1 document (abstract, problem statement, scope,
-AS-IS/TO-BE models, business requirements, software qualities, and the
-full-domain class diagram) is at `docs/phase1/tapwallet-dossier.html` —
-open it in a browser, or view it live at:
+Full Phase-1 documentation (abstract, problem statement, scope, AS-IS/TO-BE,
+business requirements, DDD architecture, patterns, class diagram, verification
+log) is at `docs/phase1/tapwallet-dossier.html` — open it in a browser, or
+view it online at:
 https://claude.ai/code/artifact/d0320ea9-7dd3-4b5c-b8e3-41bcfdf0e459
