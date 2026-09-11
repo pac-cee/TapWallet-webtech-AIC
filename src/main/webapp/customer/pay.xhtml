@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+<ui:composition template="/WEB-INF/templates/main.xhtml">
+
+    <ui:define name="title">TapWallet &#8212; Pay a merchant</ui:define>
+    <ui:define name="heading">Pay a merchant</ui:define>
+
+    <ui:define name="content">
+        <div class="card card-narrow">
+            <h:form>
+                <h:panelGrid columns="3" styleClass="form-grid">
+                    <h:outputLabel value="Merchant" for="merchant"/>
+                    <h:selectOneMenu id="merchant" value="#{customerPayment.merchantId}" required="true"
+                                     label="Merchant">
+                        <f:selectItem itemValue="#{null}" itemLabel="-- choose a merchant --"/>
+                        <f:selectItems value="#{customerPayment.merchantChoices}" var="m"
+                                       itemValue="#{m.id}" itemLabel="#{m.businessName} (#{m.code.value})"/>
+                    </h:selectOneMenu>
+                    <h:message for="merchant" style="color : #b00020"/>
+
+                    <h:outputLabel value="Amount" for="amount"/>
+                    <h:inputText id="amount" value="#{customerPayment.amount}" required="true" label="Amount">
+                        <f:validateDoubleRange minimum="1.0"/>
+                    </h:inputText>
+                    <h:message for="amount" style="color : #b00020"/>
+                </h:panelGrid>
+
+                <p class="hint" style="font-size : 13px">The money leaves your wallet and lands on the
+                    merchant's account in one step.</p>
+                <h:commandButton value="Send payment" action="#{customerPayment.pay}" styleClass="btn-primary"/>
+            </h:form>
+        </div>
+    </ui:define>
+
+</ui:composition>
+</html>

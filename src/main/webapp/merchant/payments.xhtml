@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+<ui:composition template="/WEB-INF/templates/main.xhtml">
+
+    <ui:define name="title">TapWallet &#8212; Payments received</ui:define>
+    <ui:define name="heading">Payments received</ui:define>
+
+    <ui:define name="content">
+        <ui:fragment rendered="#{merchantPortal.hasShop}">
+            <div class="card card-narrow">
+                <h3>#{merchantPortal.myShop.businessName}</h3>
+                <p>
+                    Code <span class="tag">#{merchantPortal.myShop.code.value}</span> &#183;
+                    Status #{merchantPortal.myShop.status.label}
+                </p>
+                <p style="font-size : 22px; font-weight : bold; color : #12805c">
+                    Revenue: #{merchantPortal.myShop.revenue}
+                </p>
+            </div>
+        </ui:fragment>
+
+        <ui:fragment rendered="#{not merchantPortal.hasShop}">
+            <div class="card card-narrow">
+                <p>No shop is registered to your account yet. Ask an administrator to register one.</p>
+            </div>
+        </ui:fragment>
+
+        <div class="card">
+            <h:form>
+                <h:dataTable value="#{merchantPortal.paymentsReceived}" var="p" styleClass="grid">
+                    <h:column>
+                        <f:facet name="header">Reference</f:facet>
+                        <span class="tag">#{p.reference}</span>
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Paid by</f:facet>
+                        #{p.wallet.owner.fullName}
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Amount</f:facet>
+                        #{p.amount}
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Status</f:facet>
+                        <span class="#{p.reversed ? 'badge-frozen' : 'badge-active'}">#{p.status.label}</span>
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Date</f:facet>
+                        #{p.createdAt}
+                    </h:column>
+                </h:dataTable>
+                <h:outputText value="Nobody has paid you yet." rendered="#{empty merchantPortal.paymentsReceived}"
+                              styleClass="empty"/>
+            </h:form>
+        </div>
+    </ui:define>
+
+</ui:composition>
+</html>

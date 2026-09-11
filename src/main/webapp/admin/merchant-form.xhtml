@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+<ui:composition template="/WEB-INF/templates/main.xhtml">
+
+    <ui:define name="title">TapWallet &#8212; Merchant form</ui:define>
+    <ui:define name="heading">#{merchantAdmin.creating ? 'Add merchant' : 'Edit merchant'}</ui:define>
+
+    <ui:define name="content">
+        <f:metadata>
+            <f:viewParam name="id" value="#{merchantAdmin.id}"/>
+            <f:event type="preRenderView" listener="#{merchantAdmin.loadForEdit}"/>
+        </f:metadata>
+
+        <div class="actions">
+            <h:link outcome="/admin/merchants.xhtml" value="&#8592; Back to merchants"/>
+        </div>
+
+        <div class="card card-narrow">
+            <h:form>
+                <h:panelGrid columns="3" styleClass="form-grid">
+                    <h:outputLabel value="Business name" for="businessName"/>
+                    <h:inputText id="businessName" value="#{merchantAdmin.businessName}" required="true"
+                                 label="Business name">
+                        <f:validateLength minimum="3" maximum="80"/>
+                    </h:inputText>
+                    <h:message for="businessName" style="color : #b00020"/>
+
+                    <h:outputLabel value="Merchant code (CAF-001)" for="code"/>
+                    <h:inputText id="code" value="#{merchantAdmin.code}" required="true" label="Merchant code">
+                        <f:validateRegex pattern="^[A-Za-z]{3}-\d{3}$"/>
+                    </h:inputText>
+                    <h:message for="code" style="color : #b00020"/>
+
+                    <h:outputLabel value="Operator" for="operator" rendered="#{merchantAdmin.creating}"/>
+                    <h:selectOneMenu id="operator" value="#{merchantAdmin.operatorId}" required="#{merchantAdmin.creating}"
+                                     label="Operator" rendered="#{merchantAdmin.creating}">
+                        <f:selectItem itemValue="#{null}" itemLabel="-- choose a merchant user --"/>
+                        <f:selectItems value="#{merchantAdmin.operatorChoices}" var="o"
+                                       itemValue="#{o.id}" itemLabel="#{o.fullName} (#{o.email.value})"/>
+                    </h:selectOneMenu>
+                    <h:message for="operator" style="color : #b00020" rendered="#{merchantAdmin.creating}"/>
+
+                    <h:outputLabel value="Status" for="status" rendered="#{not merchantAdmin.creating}"/>
+                    <h:selectOneMenu id="status" value="#{merchantAdmin.status}" rendered="#{not merchantAdmin.creating}">
+                        <f:selectItems value="#{merchantAdmin.statuses}" var="s" itemValue="#{s}" itemLabel="#{s.label}"/>
+                    </h:selectOneMenu>
+                    <h:message for="status" style="color : #b00020" rendered="#{not merchantAdmin.creating}"/>
+                </h:panelGrid>
+
+                <p class="hint" style="font-size : 13px">Only users with the Merchant role can operate a shop.</p>
+                <h:commandButton value="Save" action="#{merchantAdmin.save}" styleClass="btn-primary"/>
+            </h:form>
+        </div>
+    </ui:define>
+
+</ui:composition>
+</html>

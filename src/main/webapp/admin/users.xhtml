@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+<ui:composition template="/WEB-INF/templates/main.xhtml">
+
+    <ui:define name="title">TapWallet &#8212; Users</ui:define>
+    <ui:define name="heading">Users</ui:define>
+
+    <ui:define name="content">
+        <div class="actions">
+            <h:link outcome="/admin/user-form.xhtml" value="+ Add user" styleClass="btn-primary"/>
+        </div>
+
+        <div class="card">
+            <h:form>
+                <h:dataTable value="#{userAdmin.users}" var="u" styleClass="grid">
+                    <h:column>
+                        <f:facet name="header">Name</f:facet>
+                        #{u.fullName}
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Email</f:facet>
+                        #{u.email.value}
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Phone</f:facet>
+                        #{u.phone.value}
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Role</f:facet>
+                        <span class="tag">#{u.role.label}</span>
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Status</f:facet>
+                        <span class="#{u.status.active ? 'badge-active' : 'badge-frozen'}">#{u.status.label}</span>
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Actions</f:facet>
+                        <h:link outcome="/admin/user-form.xhtml" value="Edit" styleClass="link-edit">
+                            <f:param name="id" value="#{u.id}"/>
+                        </h:link>
+                        <h:commandLink value="Delete" action="#{userAdmin.delete(u.id)}" styleClass="link-delete"
+                                       onclick="return confirm('Delete this user?');"/>
+                    </h:column>
+                </h:dataTable>
+                <h:outputText value="No users yet." rendered="#{empty userAdmin.users}" styleClass="empty"/>
+            </h:form>
+        </div>
+    </ui:define>
+
+</ui:composition>
+</html>

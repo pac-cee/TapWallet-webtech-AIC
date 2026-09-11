@@ -1,26 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:f="http://xmlns.jcp.org/jsf/core">
-<h:head>
-    <title>TapWallet</title>
-    <h:outputStylesheet library="css" name="styles.css"/>
-</h:head>
-<h:body>
-    <f:view>
-        <h1>TapWallet - NFC Digital Payment &amp; Wallet System</h1>
-        <div class="nav">
-            <h:link outcome="user-list" value="Users"/>
-            <h:link outcome="wallet-list" value="Wallets"/>
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+<ui:composition template="/WEB-INF/templates/main.xhtml">
+
+    <ui:define name="title">TapWallet</ui:define>
+    <ui:define name="heading">TapWallet &#8212; Digital Wallet &amp; Merchant Payments</ui:define>
+
+    <ui:define name="content">
+        <div class="card card-narrow">
+            <ui:fragment rendered="#{not userSession.signedIn}">
+                <p>Customers hold a wallet and pay registered merchants. Merchants see what they
+                    were paid. Administrators manage both.</p>
+                <h:link outcome="/login.xhtml" value="Sign in" styleClass="btn-primary"/>
+            </ui:fragment>
+
+            <ui:fragment rendered="#{userSession.signedIn}">
+                <p>You are signed in as <strong>#{userSession.fullName}</strong> (#{userSession.roleLabel}).</p>
+                <h:link outcome="#{userSession.homePage}" value="Go to my dashboard" styleClass="btn-primary"/>
+            </ui:fragment>
         </div>
-        <div class="table-container">
-            <p style="margin-top:0">A user registers an account, then a wallet is opened for them
-                holding a balance. Manage both below.</p>
-            <p>Start with <h:link outcome="user-list" value="Users"/>, then
-                <h:link outcome="wallet-list" value="Wallets"/>.</p>
-        </div>
-    </f:view>
-</h:body>
+    </ui:define>
+
+</ui:composition>
 </html>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+<ui:composition template="/WEB-INF/templates/main.xhtml">
+
+    <ui:define name="title">TapWallet &#8212; User form</ui:define>
+    <ui:define name="heading">#{userAdmin.creating ? 'Add user' : 'Edit user'}</ui:define>
+
+    <ui:define name="content">
+        <f:metadata>
+            <f:viewParam name="id" value="#{userAdmin.id}"/>
+            <f:event type="preRenderView" listener="#{userAdmin.loadForEdit}"/>
+        </f:metadata>
+
+        <div class="actions">
+            <h:link outcome="/admin/users.xhtml" value="&#8592; Back to users"/>
+        </div>
+
+        <div class="card card-narrow">
+            <h:form>
+                <h:panelGrid columns="3" styleClass="form-grid">
+                    <h:outputLabel value="Full name" for="fullName"/>
+                    <h:inputText id="fullName" value="#{userAdmin.fullName}" required="true" label="Full name">
+                        <f:validateLength minimum="3" maximum="60"/>
+                    </h:inputText>
+                    <h:message for="fullName" style="color : #b00020"/>
+
+                    <h:outputLabel value="Email" for="email"/>
+                    <h:inputText id="email" value="#{userAdmin.email}" required="true" label="Email"/>
+                    <h:message for="email" style="color : #b00020"/>
+
+                    <h:outputLabel value="Phone (07XXXXXXXX)" for="phone"/>
+                    <h:inputText id="phone" value="#{userAdmin.phone}" required="true" label="Phone"
+                                 validatorId="phoneValidator"/>
+                    <h:message for="phone" style="color : #b00020"/>
+
+                    <h:outputLabel value="Password" for="password"/>
+                    <h:inputSecret id="password" value="#{userAdmin.password}" label="Password"
+                                   required="#{userAdmin.creating}">
+                        <f:validateLength minimum="6" maximum="72"/>
+                    </h:inputSecret>
+                    <h:message for="password" style="color : #b00020"/>
+
+                    <h:outputLabel value="Role" for="role"/>
+                    <h:selectOneMenu id="role" value="#{userAdmin.role}" disabled="#{not userAdmin.creating}">
+                        <f:selectItems value="#{userAdmin.roles}" var="r" itemValue="#{r}" itemLabel="#{r.label}"/>
+                    </h:selectOneMenu>
+                    <h:message for="role" style="color : #b00020"/>
+
+                    <h:outputLabel value="Status" for="status" rendered="#{not userAdmin.creating}"/>
+                    <h:selectOneMenu id="status" value="#{userAdmin.status}" rendered="#{not userAdmin.creating}">
+                        <f:selectItems value="#{userAdmin.statuses}" var="s" itemValue="#{s}" itemLabel="#{s.label}"/>
+                    </h:selectOneMenu>
+                    <h:message for="status" style="color : #b00020" rendered="#{not userAdmin.creating}"/>
+
+                    <h:outputLabel value="Opening balance" for="openingBalance" rendered="#{userAdmin.creating}"/>
+                    <h:inputText id="openingBalance" value="#{userAdmin.openingBalance}" label="Opening balance"
+                                 rendered="#{userAdmin.creating}">
+                        <f:validateDoubleRange minimum="0.0"/>
+                    </h:inputText>
+                    <h:message for="openingBalance" style="color : #b00020" rendered="#{userAdmin.creating}"/>
+
+                    <h:outputLabel value="Currency" for="currency" rendered="#{userAdmin.creating}"/>
+                    <h:selectOneMenu id="currency" value="#{userAdmin.currency}" rendered="#{userAdmin.creating}">
+                        <f:selectItems value="#{userAdmin.currencies}" var="c" itemValue="#{c}" itemLabel="#{c}"/>
+                    </h:selectOneMenu>
+                    <h:message for="currency" style="color : #b00020" rendered="#{userAdmin.creating}"/>
+                </h:panelGrid>
+
+                <p class="hint" style="font-size : 13px">A wallet is opened automatically for a new customer.</p>
+                <h:commandButton value="Save" action="#{userAdmin.save}" styleClass="btn-primary"/>
+            </h:form>
+        </div>
+    </ui:define>
+
+</ui:composition>
+</html>

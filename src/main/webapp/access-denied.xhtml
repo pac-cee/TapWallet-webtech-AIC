@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+<ui:composition template="/WEB-INF/templates/main.xhtml">
+
+    <ui:define name="title">TapWallet &#8212; Access denied</ui:define>
+    <ui:define name="heading">Access denied</ui:define>
+
+    <ui:define name="content">
+        <div class="card card-narrow">
+            <p style="color : #b00020">That page belongs to a different role. You have been stopped by the
+                server, not just by a hidden menu.</p>
+            <h:link outcome="#{userSession.homePage}" value="Back to my dashboard" styleClass="btn-primary"
+                    rendered="#{userSession.signedIn}"/>
+            <h:link outcome="/login.xhtml" value="Sign in" styleClass="btn-primary"
+                    rendered="#{not userSession.signedIn}"/>
+        </div>
+    </ui:define>
+
+</ui:composition>
+</html>

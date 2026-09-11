@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+<h:head>
+    <title><ui:insert name="title">TapWallet</ui:insert></title>
+    <h:outputStylesheet library="css" name="styles.css"/>
+    <ui:insert name="head"/>
+</h:head>
+<h:body>
+    <div class="topbar">
+        <span class="brand">TapWallet</span>
+        <ui:fragment rendered="#{userSession.signedIn}">
+            <h:form styleClass="topbar-right">
+                <span class="who">#{userSession.fullName} &#183; #{userSession.roleLabel}</span>
+                <h:commandLink value="Sign out" action="#{userSession.signOut}" styleClass="signout"/>
+            </h:form>
+        </ui:fragment>
+    </div>
+
+    <ui:fragment rendered="#{userSession.signedIn}">
+        <div class="nav">
+            <ui:fragment rendered="#{userSession.admin}">
+                <h:link outcome="/admin/users.xhtml" value="Users"/>
+                <h:link outcome="/admin/merchants.xhtml" value="Merchants"/>
+                <h:link outcome="/admin/payments.xhtml" value="Payments"/>
+            </ui:fragment>
+            <ui:fragment rendered="#{userSession.customer}">
+                <h:link outcome="/customer/wallet.xhtml" value="My Wallet"/>
+                <h:link outcome="/customer/pay.xhtml" value="Pay a Merchant"/>
+                <h:link outcome="/customer/payments.xhtml" value="My Payments"/>
+            </ui:fragment>
+            <ui:fragment rendered="#{userSession.merchant}">
+                <h:link outcome="/merchant/payments.xhtml" value="Payments Received"/>
+            </ui:fragment>
+        </div>
+    </ui:fragment>
+
+    <h1><ui:insert name="heading">TapWallet</ui:insert></h1>
+
+    <div class="page">
+        <h:messages globalOnly="true" styleClass="messages" errorClass="message-error" infoClass="message-info"/>
+        <ui:insert name="content"/>
+    </div>
+</h:body>
+</html>

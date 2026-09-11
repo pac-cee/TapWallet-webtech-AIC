@@ -5,8 +5,7 @@
 
 <hibernate-configuration>
 
-    <session-factory
-            name="java:hibernate/SessionFactory">
+    <session-factory>
 
         <property name="hibernate.connection.driver_class">org.h2.Driver</property>
         <property name="hibernate.connection.url">jdbc:h2:mem:tapwallet;DB_CLOSE_DELAY=-1</property>
@@ -16,8 +15,12 @@
         <property name="show_sql">true</property>
         <property name="hbm2ddl.auto">update</property>
 
-        <mapping class="rw.ac.auca.tapwallet.model.User"/>
-        <mapping class="rw.ac.auca.tapwallet.model.Wallet"/>
+        <property name="hibernate.current_session_context_class">thread</property>
+
+        <mapping class="rw.ac.auca.tapwallet.domain.model.user.User"/>
+        <mapping class="rw.ac.auca.tapwallet.domain.model.wallet.Wallet"/>
+        <mapping class="rw.ac.auca.tapwallet.domain.model.merchant.Merchant"/>
+        <mapping class="rw.ac.auca.tapwallet.domain.model.payment.Payment"/>
 
     </session-factory>
 
